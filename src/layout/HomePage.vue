@@ -16,14 +16,19 @@
         ref="canvas"
       ></canvas>
     </div>
-    <v-btn color="success" @click="convertTobase64">Change cover</v-btn>
+    <v-btn
+      color="success"
+      :loading="this.buttonLoading"
+      @click="convertTobase64"
+      >Set as Spotify playlist cover</v-btn
+    >
     <v-btn color="success" @click="downloadCoverImage">Download cover</v-btn>
 
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="600px">
         <template v-slot:activator="{ on, attrs }">
           <v-btn color="primary" dark v-bind="attrs" v-on="on">
-            Open Dialog
+            Customise Cover
           </v-btn>
         </template>
         <v-card>
@@ -31,7 +36,34 @@
             <span class="headline">Customise cover</span>
           </v-card-title>
           <v-card-text>
-            <v-color-picker v-model="color"></v-color-picker>
+            <v-color-picker
+              elevation="1"
+              class="mr-auto ml-auto"
+              width="500"
+              v-model="color"
+            ></v-color-picker>
+            <v-radio-group v-model="radioGroup">
+              <v-radio label="Circle" color="success" value="circle"></v-radio>
+              <v-radio label="Square" color="success" value="square"></v-radio>
+              <v-radio label="Diamond" color="success" value="diamond"></v-radio>
+              <v-radio label="Heart" color="success" value="cardioid"></v-radio>
+              <v-radio label="Star" color="success" value="star"></v-radio>
+              <v-radio label="Pentagon" color="success" value="pentagon"
+              ></v-radio>
+            </v-radio-group>
+
+            <v-radio-group v-model="radioTextColorGroup">
+              <v-radio
+                label="Dark texts"
+                color="success"
+                value="random-dark"
+              ></v-radio>
+              <v-radio
+                label="Light texts"
+                color="success"
+                value="random-light"
+              ></v-radio>
+            </v-radio-group>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -45,12 +77,21 @@
         </v-card>
       </v-dialog>
     </v-row>
+
+    <Snackbar
+      v-if="snackbar"
+      :snackbar="snackbar"
+      :color="snackBarColor"
+      :text="snackBarText"
+    >
+    </Snackbar>
   </v-container>
 </template>
 
 <script>
 import LinkForm from "../components/LinkForm";
 import HelperModal from "../components/HelperModal";
+import Snackbar from "../components/Snackbar";
 import WordCloud from "wordcloud";
 import axios from "axios";
 export default {
@@ -58,6 +99,7 @@ export default {
   components: {
     LinkForm: LinkForm,
     HelperModal: HelperModal,
+    Snackbar: Snackbar,
   },
   data() {
     return {
@@ -65,8 +107,14 @@ export default {
       list: [],
       dialog: false,
       type: "hex",
-      hex: "#FF00FF",
-      playlistId:""
+      hex: "#F9F8F0",
+      playlistId: "",
+      buttonLoading: false,
+      snackbar: false,
+      snackBarColor: "success",
+      snackBarText: "Your Spotify playlist cover has been changed!",
+      radioGroup: "square",
+      radioTextColorGroup: "random-dark",
     };
   },
   computed: {
@@ -87,20 +135,17 @@ export default {
     generateArt(list) {
       var options = {
         gridSize: 4,
-        weightFactor: 10,
-        // gridSize: Math.round((16 * 1000) / 1024),
-        // weightFactor: function (size) {
-        //   return (Math.pow(size, 2.3) * 1000) / 1024;
-        // },
+        weightFactor: 5,
         fontFamily: "Hiragino Mincho Pro, serif",
-        color: "random-dark",
+        color: this.radioTextColorGroup,
         // color: function (word, weight) {
         //   return weight === 12 ? "#f02222" : "#c09292";
         // },
         rotateRatio: 0.5,
         rotationSteps: 2,
-        backgroundColor: this[this.type],
+        backgroundColor: this.hex,
         list: list,
+        shape: this.radioGroup,
       };
       WordCloud(this.$refs["canvas"], options);
     },
@@ -111,18 +156,28 @@ export default {
       var canvas = document.getElementById("my_canvas");
       var dataURL = canvas.toDataURL();
       var strImage = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
-      console.log(dataURL);
       try {
+        this.buttonLoading = true;
         await axios.put(
-          "http://localhost:8888/change_image/?access_token=" + access_token + "&playlist_id=" + this.playlistId,
+          "http://localhost:8888/change_image/?access_token=" +
+            access_token +
+            "&playlist_id=" +
+            this.playlistId,
           {
             data: {
               img: strImage,
             },
           }
         );
+        this.snackbar = true;
       } catch (error) {
         console.log(error);
+        this.snackbar = true;
+        this.snackBarText = "Something failed hmm...try again";
+        this.snackBarColor = "error";
+      } finally {
+        setTimeout(() => (this.snackbar = false), 3000);
+        this.buttonLoading = false;
       }
     },
 
