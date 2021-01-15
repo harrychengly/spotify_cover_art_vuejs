@@ -80,7 +80,7 @@ export default {
       const playlistUrl = this.link;
 
       const playlistId = playlistUrl.split("?")[0].split("/")[4];
-      console.log(playlistId);
+      this.$parent.playlistId = playlistId
 
       const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
 
