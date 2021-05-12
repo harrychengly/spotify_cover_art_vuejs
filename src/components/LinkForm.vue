@@ -1,166 +1,117 @@
 <template>
   <v-form>
     <v-text-field
+      :value="playlistLink"
+      :placeholder="$LOCAL('LINK_FORM_PLACEHOLDER')"
+      :rules="[rules.required, rules.validLink]"
       outlined
       color="success"
-      :placeholder="$LOCAL('LINK_FORM_PLACEHOLDER')"
-      :model="link"
-      class="link-text-field mt-4"
       autocomplete="off"
-      :clearable="true"
-      :rules="[validateInput]"
-      :error-messages="invalidLinkError"
-      @input="handleInputChage"
+      @input="handleInputChange"
       :full-width="true"
-    ></v-text-field>
+      :success-messages="successMessage"
+    />
     <v-btn
       color="success"
-      :disabled="invalidLinkError !== ''"
+      :disabled="!valid"
       @click="generateArt"
-      >Generate</v-btn
     >
-    <v-btn color="secondary" @click="loginSpotify"></v-btn>
-    <a href="http://localhost:8888/login" class="btn btn-primary"
-      >Log in with Spotify</a
-    ><br />
+      Generate
+    </v-btn>
   </v-form>
 </template>
 
 <script>
-// import Vue from "vue";
-import axios from "axios";
-
 export default {
-  name: "LinkForm",
+  name: 'LinkForm',
   data() {
     return {
-      link: "",
-      invalidLinkError: "",
-      formDirty: false,
-      email: "",
+      valid: false, // Check if input is valid
+      rules: {
+        required: value => {
+          // Link cannot be empty
+          this.valid = value !== ''
+          return this.valid || 'Playlist link is required'
+        },
+        validLink: value => {
+          // Link must be valud
+          this.valid = value.match(this.$LOCAL('LINK_REGEX')) && value.length === 82
+          return this.valid || this.$LOCAL('LINK_INVALID')
+        }
+      }
     };
   },
-
+  props: {
+    playlistLink: {
+      type: String,
+      default: ''
+    }
+  },  
   computed: {
-    user() {
-      return this.$store.getters.getUser;
-    },
+    successMessage() {
+      return this.valid ? 'Playlist link is valid' : ''
+    }
   },
   methods: {
-    handleInputChage(value) {
-      this.formDirty = true;
-      this.link = value;
-    },
-    validateInput() {
-      if (this.formDirty) {
-        if (
-          this.link &&
-          this.link.match(this.$LOCAL("LINK_REGEX")) &&
-          this.link.length === 82
-        ) {
-          this.invalidLinkError = "";
-          return true;
-        }
-        this.invalidLinkError = this.$LOCAL("LINK_INVALID");
-        return false;
-      }
-      return true;
+    /**
+     * Handle input change.
+     * Emit link-change event to HomePage and mutate playlistLink value.
+     */
+    handleInputChange(value) {
+      this.$emit("link-change", value)
     },
 
+    /**
+     * Log user out and delete tokens
+     */
     logOut() {
-      this.$store.commit("mutateUser", null);
+      // TODO: Remove Tokens
       this.$router.push({ name: "Home" });
     },
 
+    /**
+     * Emit generate-art event to HomePage and generate word cloud.
+     */
     async generateArt() {
-      // generateArt() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const access_token = urlParams.get("access_token");
 
-      const playlistUrl = this.link;
+      this.$emit('generate-art')
 
-      const playlistId = playlistUrl.split("?")[0].split("/")[4];
-      this.$parent.playlistId = playlistId
+      // // Get playlistId
+      // const playlistId = this.link.split("?")[0].split("/")[4];
+      // this.$parent.playlistId = playlistId
 
-      const url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`;
+      // const success = await this.fetchPlaylistTracks(playlistId)
 
-      const config = {
-        headers: { Authorization: "Bearer " + access_token },
-      };
+      // if (success) {
+      //   var bodyItems = this.tracks;
+      //   var bodyItemsLen = bodyItems.length;
+      //   console.log(bodyItemsLen)
 
-      const res = await axios.get(url, config);
-    //   console.log(res.data);
+      //   var artistsObj = {};
 
-      var bodyItems = res.data.items;
-      var bodyItemsLen = Object.keys(bodyItems).length;
-
-      var artistsObj = {};
-
-      for (let i = 0; i < bodyItemsLen; i++) {
-        var artists = bodyItems[i]["track"]["artists"];
-        artists.forEach((element) => {
-          if (element.name in artistsObj) {
-            artistsObj[element.name] += 1;
-          } else {
-            artistsObj[element.name] = 1;
-          }
-        });
-      }
-var list = Object.entries(artistsObj)
-      this.$emit("generate-art", list);
-      //   console.log(this.$parent.getElementById("my_canvas"))
-      //   WordCloud(this.$parent.getElementById("my_canvas"), { list: list });
+      //   for (let i = 0; i < bodyItemsLen; i++) {
+      //     var artists = bodyItems[i]["track"]["artists"];
+      //     artists.forEach((element) => {
+      //       if (element.name in artistsObj) {
+      //         artistsObj[element.name] += 1;
+      //       } else {
+      //         artistsObj[element.name] = 1;
+      //       }
+      //     });
+      //   }
+      //   var list = Object.entries(artistsObj)
+      //   this.$emit("generate-art", list);
+      // }
     },
 
-    async loginSpotify() {
-      try {
-        const config = {
-          headers: { "Access-Control-Allow-Origin": "*" },
-        };
-        const { access_token, refresh_token } = await axios.get(
-          "http://localhost:8888/login",
-          config
-        );
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("refresh_token", refresh_token);
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  },
-
-  async created() {
-    if (this.$route.query) {
-      await axios
-        .get(
-          "https://api.spotify.com/v1/playlists/2pQfOsK5FheoNZlN67akuB/tracks",
-          {
-            headers: {
-              Authorization: "Bearer " + this.$route.query.access_token,
-            },
-          }
-        )
-        .then((response) => {
-          this.$store.commit("mutateUser", response.data);
-          console.log("Response from server: ");
-          console.log(this.$store.state.user);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  },
+  }
 };
 </script>
 
-<style scoped lang="scss">
-@import "@/styles/colors.scss";
+<style scoped lang='scss'>
 
-.link-text-field {
-  margin-top: 1rem;
-}
-
-::v-deep .link-text-field input {
+::v-deep input {
   text-align: center;
 }
+
 </style>
