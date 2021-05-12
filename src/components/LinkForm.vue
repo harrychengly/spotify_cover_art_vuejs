@@ -35,7 +35,7 @@ export default {
         },
         validLink: value => {
           // Link must be valud
-          this.valid = value.match(this.$LOCAL('LINK_REGEX')) && value.length === 82
+          this.valid = value.match(this.$LOCAL('LINK_REGEX')) && value.length === 76
           return this.valid || this.$LOCAL('LINK_INVALID')
         }
       }
@@ -75,33 +75,6 @@ export default {
     async generateArt() {
 
       this.$emit('generate-art')
-
-      // // Get playlistId
-      // const playlistId = this.link.split("?")[0].split("/")[4];
-      // this.$parent.playlistId = playlistId
-
-      // const success = await this.fetchPlaylistTracks(playlistId)
-
-      // if (success) {
-      //   var bodyItems = this.tracks;
-      //   var bodyItemsLen = bodyItems.length;
-      //   console.log(bodyItemsLen)
-
-      //   var artistsObj = {};
-
-      //   for (let i = 0; i < bodyItemsLen; i++) {
-      //     var artists = bodyItems[i]["track"]["artists"];
-      //     artists.forEach((element) => {
-      //       if (element.name in artistsObj) {
-      //         artistsObj[element.name] += 1;
-      //       } else {
-      //         artistsObj[element.name] = 1;
-      //       }
-      //     });
-      //   }
-      //   var list = Object.entries(artistsObj)
-      //   this.$emit("generate-art", list);
-      // }
     },
 
   }

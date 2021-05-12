@@ -102,7 +102,6 @@
 </template>
 
 <script>
-import WordCloud from "wordcloud"
 import { VueTyper } from 'vue-typer'
 import { mapState, mapActions } from "vuex"
 
@@ -163,24 +162,26 @@ export default {
     },
     async generateArt () {
       await this.retrievePlaylistArtists(this.playlistId)
+      console.log("here")
+      this.$router.push('result')
     },
-    generateWordCloud(list) {
-      var options = {
-        gridSize: 4,
-        weightFactor: 5,
-        fontFamily: "Hiragino Mincho Pro, serif",
-        color: this.radioTextColorGroup,
-        // color: function (word, weight) {
-        //   return weight === 12 ? "#f02222" : "#c09292";
-        // },
-        rotateRatio: 0.5,
-        rotationSteps: 2,
-        backgroundColor: this.hex,
-        list: list,
-        shape: this.radioGroup,
-      };
-      WordCloud(this.$refs["canvas"], options);
-    },
+    // generateWordCloud(list) {
+    //   var options = {
+    //     gridSize: 4,
+    //     weightFactor: 5,
+    //     fontFamily: "Hiragino Mincho Pro, serif",
+    //     color: this.radioTextColorGroup,
+    //     // color: function (word, weight) {
+    //     //   return weight === 12 ? "#f02222" : "#c09292";
+    //     // },
+    //     rotateRatio: 0.5,
+    //     rotationSteps: 2,
+    //     backgroundColor: this.hex,
+    //     list: list,
+    //     shape: this.radioGroup,
+    //   };
+    //   WordCloud(this.$refs["canvas"], options);
+    // },
 
     // async convertTobase64() {
     //   const urlParams = new URLSearchParams(window.location.search);

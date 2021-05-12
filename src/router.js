@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 import HomePage from './layout/HomePage.vue'
+import ResultPage from './layout/ResultPage.vue'
 import TokenService from './services/token.service'
 import store from './store'
 
@@ -14,6 +15,14 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: HomePage,
+      meta: {
+        title: 'Artify'
+      },
+    },
+    {
+      path: '/result',
+      name: 'result',
+      component: ResultPage,
       meta: {
         title: 'Artify'
       },
