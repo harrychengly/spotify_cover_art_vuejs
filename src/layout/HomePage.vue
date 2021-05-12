@@ -2,12 +2,33 @@
   <v-container fluid class="body-wrapper">
     <transition name="drop">
       <div v-if="show" class="form-wrapper">
-        <h2 class="tagline-text">{{ $LOCAL("TITLE") }}</h2>
-        <LinkForm @generate-art="generateArt" />
-        <HelperModal />
+        <div v-if="userIsLoggedIn">
+          <VueTyper
+            :pre-type-delay="600"
+            :repeat="0"
+            text="where art 🎨 meets music 🎵."
+          />
+          <LinkForm
+            :playlistLink="playlistLink"
+            @link-change="handleLinkChange"
+            @generate-art="generateArt"
+          />
+          <HelperModal />
+        </div>
+        <div v-else>
+          <VueTyper
+            :pre-type-delay="600"
+            erase-style='clear'
+            :repeat="0"
+            :text='["Hello 👋.", "We make art 🎨 with music 🎵.", "Log in to continue 😄."]'
+          />
+          <v-btn :link="true" href="http://localhost:8888/login" color="success">
+            Log in with Spotify
+          </v-btn>
+        </div>
       </div>
     </transition>
-    <div>
+    <!-- <div>
       <canvas
         id="my_canvas"
         width="300"
@@ -41,35 +62,43 @@
             <v-btn color="blue darken-1" text @click="dialog = false">
               Save
             </v-btn>
-          </v-card-actions>
+          </v-card-actions >
         </v-card>
       </v-dialog>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 
 <script>
-import LinkForm from "../components/LinkForm";
-import HelperModal from "../components/HelperModal";
-import WordCloud from "wordcloud";
-import axios from "axios";
+import WordCloud from "wordcloud"
+import { VueTyper } from 'vue-typer'
+import { mapState, mapActions } from "vuex"
+
+import LinkForm from "../components/LinkForm"
+import HelperModal from "../components/HelperModal"
+
 export default {
   name: "HomePage",
   components: {
-    LinkForm: LinkForm,
-    HelperModal: HelperModal,
+    LinkForm,
+    HelperModal,
+    VueTyper
   },
   data() {
     return {
       show: false,
-      list: [],
+      playlistLink: '',
+
       dialog: false,
       type: "hex",
       hex: "#FF00FF",
-      playlistId:""
     };
   },
   computed: {
+    ...mapState('home', [
+      'artists',
+      'userIsLoggedIn'
+    ]),
     color: {
       get() {
         return this[this.type];
@@ -78,13 +107,32 @@ export default {
         this[this.type] = v;
       },
     },
+    /**
+     * Retrieves the playlistId from the playlist link
+     */
+    playlistId() {
+      return this.playlistLink.split("?")[0].split("/")[4]
+    }
   },
   mounted() {
-    this.show = true;
+    this.show = true
   },
 
   methods: {
-    generateArt(list) {
+    ...mapActions('home', [
+      'setTokens',
+      'retrievePlaylistArtists'
+    ]),
+    /**
+     * Change value of playlistLink when there is an input change in LinkForm
+     */
+    handleLinkChange(value) {
+      this.playlistLink = value
+    },
+    async generateArt () {
+      await this.retrievePlaylistArtists(this.playlistId)
+    },
+    generateWordCloud(list) {
       var options = {
         gridSize: 4,
         weightFactor: 10,
@@ -105,26 +153,25 @@ export default {
       WordCloud(this.$refs["canvas"], options);
     },
 
-    async convertTobase64() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const access_token = urlParams.get("access_token");
-      var canvas = document.getElementById("my_canvas");
-      var dataURL = canvas.toDataURL();
-      var strImage = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
-      console.log(dataURL);
-      try {
-        await axios.put(
-          "http://localhost:8888/change_image/?access_token=" + access_token + "&playlist_id=" + this.playlistId,
-          {
-            data: {
-              img: strImage,
-            },
-          }
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    // async convertTobase64() {
+    //   const urlParams = new URLSearchParams(window.location.search);
+    //   const access_token = urlParams.get("access_token");
+    //   var canvas = document.getElementById("my_canvas");
+    //   var dataURL = canvas.toDataURL();
+    //   var strImage = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
+    //   try {
+    //     await axios.put(
+    //       "http://localhost:8888/change_image/?access_token=" + access_token + "&playlist_id=" + this.playlistId,
+    //       {
+    //         data: {
+    //           img: strImage,
+    //         },
+    //       }
+    //     );
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // },
 
     downloadCoverImage() {
       var canvas = document.getElementById("my_canvas");
@@ -159,6 +206,12 @@ export default {
       font-size: 2.5rem;
     }
   }
+}
+
+.vue-typer {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
 .drop-enter-active {
