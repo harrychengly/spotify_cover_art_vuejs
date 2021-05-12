@@ -179,10 +179,13 @@ app.put('/change_image', function (req, res) {
   request.put(options, (error, response) => {
     if (response.statusCode === 202) {
       console.log('Upload cover')
+      return res.status(202).send()
     } else {
-      console.log(error)
+      return res.status(400).send()
     }
   })
+
+
 })
 
 console.log('Listening on 8888')
