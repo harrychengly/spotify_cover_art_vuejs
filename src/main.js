@@ -1,19 +1,25 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router/router';
-import store from './store/store';
-import Constants from './constants/constants'
+import router from './router'
+import store from './store'
+import Constants from './constants'
 import vuetify from './plugins/vuetify'
+
+import ApiService from './services/api.service'
+import TokenService from './services/token.service'
+
+// Global Styles
 import './styles/styles.scss'
 
 Vue.config.productionTip = false
 
 Vue.use(Constants)
 
-router.beforeEach((to, from, next) => {
-  document.title = to.meta.title;
-  return next();
-});
+// Set axios default auth header
+if (TokenService.getAccessToken()) {
+  const accessToken = TokenService.getAccessToken()
+  ApiService.setTokenHeader(accessToken)
+}
 
 new Vue({
   router,
