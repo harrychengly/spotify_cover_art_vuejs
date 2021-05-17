@@ -2,12 +2,14 @@
   <v-container fluid class="body-wrapper">
     <v-row>
       <v-col>
+        <div class = "box">
         <canvas
           id="my_canvas"
           ref="canvas"
           width="300"
           height="300"
         ></canvas>
+        </div>
       </v-col>
       <v-col>
         <v-expansion-panels>
