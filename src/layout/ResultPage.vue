@@ -1,13 +1,17 @@
 <template>
   <v-container fluid class="body-wrapper">
     <div>
+      <!-- <div id="fonttest">
+        Hello
+      </div> -->
+      <div class="box">
       <canvas
         id="my_canvas"
         width="300"
         height="300"
-        style="border: 1px solid #000000"
-        ref="canvas"
+        ref = "canvas"
       ></canvas>
+      </div>
     </div>
 
     <v-row justify="center">
@@ -43,7 +47,7 @@
                 value="pentagon"
               ></v-radio>
             </v-radio-group>
-             <h3 class="mt-3">Text Color</h3>
+            <h3 class="mt-3">Text Color</h3>
             <v-radio-group
               :value="artSetting.textColor"
               @change="changeTextColor"
@@ -59,7 +63,7 @@
                 value="random-light"
               ></v-radio>
             </v-radio-group>
-              <h3 class="mt-3">Text Size</h3>
+            <h3 class="mt-3">Text Size</h3>
             <v-slider
               :min="minTextSize"
               :max="maxTextSize"
@@ -259,6 +263,36 @@ export default {
 
 <style scoped lang="scss">
 @import "@/styles/colors.scss";
+
+// #fonttest{
+//   font-family: "Gotham Medium", Arial;
+//      font-size: 100px;
+// }
+
+.box {
+  box-shadow:
+  0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+  0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+  0 12.5px 10px rgba(0, 0, 0, 0.06),
+  0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+  0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+  0 100px 80px rgba(0, 0, 0, 0.12)
+;
+  width: 300px;
+  height: 300px;
+  margin: 100px auto;
+  background: white;
+  border-radius: 5px;
+}
+
+
+body {
+  font-family: "Gotham", Arial;
+     font-size: 100px;
+  background: #EEF2F7;
+}
+
+$body-font-family: 'Gotham';
 
 .body-wrapper {
   display: flex;
