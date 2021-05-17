@@ -18,6 +18,9 @@ export default {
   },
 
   async retrievePlaylistArtists({ commit }, playlistId) {
+    commit('setError', null)
+    commit('setRetrieveArtistsLoading', true)
+
     try {
       const records = await SpotifyService.fetchPlaylistTracks(playlistId)
 
@@ -42,8 +45,11 @@ export default {
 
       return true
     } catch (error) {
-      commit('setError', error)
+      console.log(error)
+      commit('setError', 'Cannot get playlist. Please try again.')
       return false
+    } finally {
+      commit('removeRetrieveArtistsLoading', false)
     }
   }
 }
