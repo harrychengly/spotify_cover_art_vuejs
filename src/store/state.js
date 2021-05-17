@@ -5,4 +5,5 @@ export default {
   error: null,
   userIsLoggedIn: false,
   retrieveArtistsLoading: false,
+  maxArtistFrequency: 0,
 }

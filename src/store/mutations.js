@@ -33,5 +33,9 @@ export default {
 
   removeRetrieveArtistsLoading(state) {
     state.retrieveArtistsLoading = false
+  },
+
+  setMaxArtistFrequency(state, payload) {
+    state.maxArtistFrequency = payload
   }
 }

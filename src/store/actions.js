@@ -26,6 +26,8 @@ export default {
 
       const artistsCollection = {}
 
+      let maxArtistFrequency = 0
+
       records.forEach(record => {
         // Get the artists of the track
         const artists = record.track.artists
@@ -36,12 +38,14 @@ export default {
           } else {
             artistsCollection[artist.name] = 1
           }
+          maxArtistFrequency = Math.max(maxArtistFrequency, artistsCollection[artist.name])
         })
       })
 
       const allArtists = Object.entries(artistsCollection)
 
       commit('setArtists', allArtists)
+      commit('setMaxArtistFrequency', maxArtistFrequency)
 
       return true
     } catch (error) {
