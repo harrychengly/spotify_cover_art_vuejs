@@ -25,5 +25,13 @@ export default {
 
   setUserIsLoggedIn(state) {
     state.userIsLoggedIn = true
+  },
+
+  setRetrieveArtistsLoading(state) {
+    state.retrieveArtistsLoading = true
+  },
+
+  removeRetrieveArtistsLoading(state) {
+    state.retrieveArtistsLoading = false
   }
 }
