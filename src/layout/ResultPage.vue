@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="body-wrapper">
+  <v-container fluid class="body-wrapper" :style="bodyBackgroundColor">
     <v-row>
       <v-col>
         <div class = "box">
@@ -19,15 +19,13 @@
               <h3>Color</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <div class="swatch-wrapper">
-                <v-swatches
-                  swatches="text-advanced"
-                  inline
-                  :value="artSetting.backgroundColor"
-                  @input="changeBackgroundColor"
-                >
-                </v-swatches>
-              </div>
+              <v-swatches
+                swatches="text-advanced"
+                inline
+                :value="artSetting.backgroundColor"
+                @input="changeBackgroundColor"
+              >
+              </v-swatches>
             </v-expansion-panel-content>
           </v-expansion-panel>
 
@@ -42,6 +40,7 @@
                   :key="shape.label"
                   :label="shape.label"
                   :value="shape.value"
+                  class="whiteText"
                 ></v-radio>
               </v-radio-group>
             </v-expansion-panel-content>
@@ -53,9 +52,22 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-radio-group :value="artSetting.textColor" @change="changeTextColor" row>
-                <v-radio label="Dark" value="random-dark"></v-radio>
-                <v-radio label="Light" value="random-light"></v-radio>
+                <v-radio label="Grade Grey" value="GradeGrey"></v-radio>
+                <v-radio label="Yoda" value="Yoda"></v-radio>
+                <v-radio label="Cool Sky" value="CoolSky"></v-radio>
+                <v-radio label="Pure Lust" value="PureLust"></v-radio>
+                <v-radio label="Ohhappiness" value="Ohhappiness"></v-radio>
+                <v-radio label="Sunkist" value="Sunkist"></v-radio>
               </v-radio-group>
+              <!-- <v-swatches
+                inline
+                :value="artSetting.textColor"
+                @input="changeTextColor"
+                :swatches="['#C0392B', '#E74C3C', '#9B59B6', '#8E44AD', '#2980B9', '#3498DB', '#1ABC9C'
+                , '#16A085', '#27AE60', '#2ECC71', '#F1C40F', '#F39C12', '#E67E22', '#D35400', '#ECF0F1', '#BDC3C7',
+                '#95A5A6', '#7F8C8D', '#34495E', '#2C3E50']"
+              >
+              </v-swatches> -->
             </v-expansion-panel-content>
           </v-expansion-panel>
 
@@ -95,6 +107,7 @@
 
 
 <script>
+import Gradient from "javascript-color-gradient";
 import VSwatches from 'vue-swatches'
 import WordCloud from "wordcloud";
 import { mapState, mapActions } from "vuex";
@@ -108,8 +121,8 @@ export default {
   data() {
     return {
       artSetting: {
-        textColor: "#000",
-        backgroundColor: "#fff",
+        textColor: "GradeGrey",
+        backgroundColor: "#FFF",
         shape: "circle",
         textSize: 5,
       },
@@ -119,6 +132,37 @@ export default {
       playlistId: '',
       buttonLoading: false,
       tickLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      colorGradient: null,
+      gradientMap: {
+        "GradeGrey": {
+          light: "#BDC3C7",
+          dark: "#2c3e50"
+        },
+        "Yoda": {
+          dark: "#493240",
+          light: "#FF0099"
+        },
+        "CoolSky": {
+          light: "#6DD5FA",
+          dark: "#2980B9",
+        },
+        "PureLust": {
+          light: "#dd1818",
+          dark: "#333333"
+        },
+        "Ohhappiness": {
+          light: "#96c93d",
+          dark: "#00b09b"
+        },
+        "Sunkist": {
+          light: "#F2C94C",
+          dark: "#F2994A"
+        },
+        "WhatLiesBeyond": {
+          light: "#f0f2f0",
+          dark: "#000c40",
+        }
+      },
       shapes: [
         {label: "Circle", value: "circle"},
         {label: "Square", value: "square"},
@@ -132,9 +176,15 @@ export default {
   computed: {
     ...mapState("home", [
       "artists",
+      "maxArtistFrequency",
       "error",
       "retrieveArtistsLoading"
     ]),
+    bodyBackgroundColor() {
+      return {
+        "background": `linear-gradient(120deg, ${this.artSetting.backgroundColor}, #191414)`
+      }
+    }
   },
   async mounted() {
     this.playlistId = this.$route.query.playlistId
@@ -229,7 +279,18 @@ export default {
       }
     },
 
+    generateColorGradient() {
+      const colorGradient = new Gradient();
+      colorGradient.setMidpoint(this.maxArtistFrequency);
+      const colorOne = this.gradientMap[this.artSetting.textColor].light
+      const colorTwo = this.gradientMap[this.artSetting.textColor].dark
+      colorGradient.setGradient(colorOne, colorTwo);
+      this.colorGradient = colorGradient
+    },
+
     generateWordCloud(list) {
+      this.generateColorGradient()
+
       var options = {
         gridSize: 6,
         fontFamily: "Hiragino Mincho Pro, serif",
@@ -237,11 +298,14 @@ export default {
         rotateRatio: 0,
         rotationSteps: 2,
         list: list,
-        color: this.artSetting.textColor,
+        color: (_, weight) => {
+          return this.colorGradient.getColor(weight)
+        },
         weightFactor: this.artSetting.textSize,
         backgroundColor: this.artSetting.backgroundColor,
         shape: this.artSetting.shape,
       };
+
       WordCloud(this.$refs["canvas"], options);
     },
 
@@ -284,11 +348,6 @@ export default {
 <style scoped lang="scss">
 @import "@/styles/colors.scss";
 
-// #fonttest{
-//   font-family: "Gotham Medium", Arial;
-//      font-size: 100px;
-// }
-
 .box {
   box-shadow:
   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
@@ -308,11 +367,9 @@ export default {
 
 body {
   font-family: "Gotham", Arial;
-     font-size: 100px;
+  font-size: 100px;
   background: #EEF2F7;
 }
-
-$body-font-family: 'Gotham';
 
 .body-wrapper {
   display: flex;
@@ -326,7 +383,7 @@ $body-font-family: 'Gotham';
   display: block;
 }
 
-.swatch-wrapper {
-  display: flex;
+.whiteText {
+  color: #FFF;
 }
 </style>
