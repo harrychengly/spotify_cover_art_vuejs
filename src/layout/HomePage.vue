@@ -6,7 +6,7 @@
           <VueTyper
             :pre-type-delay="600"
             :repeat="0"
-            text="where art 🎨 meets music 🎵."
+            text="where art 🎨 meets music 🎵"
           />
           <LinkForm
             :playlistLink="playlistLink"
@@ -20,7 +20,7 @@
             :pre-type-delay="600"
             erase-style='clear'
             :repeat="0"
-            :text='["Hello 👋.", "We make art 🎨 with music 🎵.", "Log in to continue 😄."]'
+            :text='["Hello 👋", "We make art 🎨 with music 🎵", "Log in to continue 😄"]'
           />
           <v-btn :link="true" href="http://localhost:8888/login" color="success">
             Log in with Spotify
@@ -28,76 +28,6 @@
         </div>
       </div>
     </transition>
-    <!-- <div>
-      <canvas
-        id="my_canvas"
-        width="300"
-        height="300"
-        style="border: 1px solid #000000"
-        ref="canvas"
-      ></canvas>
-    </div>
-    <v-btn
-      color="success"
-      :loading="this.buttonLoading"
-      @click="convertTobase64"
-      >Set as Spotify playlist cover</v-btn
-    >
-    <v-btn color="success" @click="downloadCoverImage">Download cover</v-btn>
-
-    <v-row justify="center">
-      <v-dialog v-model="dialog" persistent max-width="600px">
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn color="primary" dark v-bind="attrs" v-on="on">
-            Customise Cover
-          </v-btn>
-        </template>
-        <v-card>
-          <v-card-title>
-            <span class="headline">Customise cover</span>
-          </v-card-title>
-          <v-card-text>
-            <v-color-picker
-              elevation="1"
-              class="mr-auto ml-auto"
-              width="500"
-              v-model="color"
-            ></v-color-picker>
-            <v-radio-group v-model="radioGroup">
-              <v-radio label="Circle" color="success" value="circle"></v-radio>
-              <v-radio label="Square" color="success" value="square"></v-radio>
-              <v-radio label="Diamond" color="success" value="diamond"></v-radio>
-              <v-radio label="Heart" color="success" value="cardioid"></v-radio>
-              <v-radio label="Star" color="success" value="star"></v-radio>
-              <v-radio label="Pentagon" color="success" value="pentagon"
-              ></v-radio>
-            </v-radio-group>
-
-            <v-radio-group v-model="radioTextColorGroup">
-              <v-radio
-                label="Dark texts"
-                color="success"
-                value="random-dark"
-              ></v-radio>
-              <v-radio
-                label="Light texts"
-                color="success"
-                value="random-light"
-              ></v-radio>
-            </v-radio-group>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog = false">
-              Close
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="dialog = false">
-              Save
-            </v-btn>
-          </v-card-actions >
-        </v-card>
-      </v-dialog>
-    </v-row> -->
   </v-container>
 </template>
 
@@ -119,25 +49,14 @@ export default {
     return {
       show: false,
       playlistLink: '',
-
-      dialog: false,
-      type: "hex",
-      hex: "#FF00FF",
     };
   },
   computed: {
     ...mapState('home', [
       'artists',
-      'userIsLoggedIn'
+      'userIsLoggedIn',
+      'error',
     ]),
-    color: {
-      get() {
-        return this[this.type];
-      },
-      set(v) {
-        this[this.type] = v;
-      },
-    },
     /**
      * Retrieves the playlistId from the playlist link
      */
@@ -152,36 +71,22 @@ export default {
   methods: {
     ...mapActions('home', [
       'setTokens',
-      'retrievePlaylistArtists'
+      'retrievePlaylistArtists',
     ]),
+
     /**
      * Change value of playlistLink when there is an input change in LinkForm
      */
     handleLinkChange(value) {
       this.playlistLink = value
     },
+
+    /**
+     * Generate the playlist art
+     */
     async generateArt () {
-      await this.retrievePlaylistArtists(this.playlistId)
-      console.log("here")
-      this.$router.push('result')
+      this.$router.push({ path: 'result', query: { playlistId: this.playlistId }})
     },
-    // generateWordCloud(list) {
-    //   var options = {
-    //     gridSize: 4,
-    //     weightFactor: 5,
-    //     fontFamily: "Hiragino Mincho Pro, serif",
-    //     color: this.radioTextColorGroup,
-    //     // color: function (word, weight) {
-    //     //   return weight === 12 ? "#f02222" : "#c09292";
-    //     // },
-    //     rotateRatio: 0.5,
-    //     rotationSteps: 2,
-    //     backgroundColor: this.hex,
-    //     list: list,
-    //     shape: this.radioGroup,
-    //   };
-    //   WordCloud(this.$refs["canvas"], options);
-    // },
 
     // async convertTobase64() {
     //   const urlParams = new URLSearchParams(window.location.search);
