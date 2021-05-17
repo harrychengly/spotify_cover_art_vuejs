@@ -3,5 +3,6 @@ export default {
   refreshToken: null,
   artists: [],
   error: null,
-  userIsLoggedIn: false
+  userIsLoggedIn: false,
+  retrieveArtistsLoading: false,
 }
