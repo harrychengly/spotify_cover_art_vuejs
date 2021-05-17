@@ -1,101 +1,108 @@
 <template>
   <v-container fluid class="body-wrapper">
-    <div>
-      <canvas
-        id="my_canvas"
-        width="300"
-        height="300"
-        style="border: 1px solid #000000"
-        ref="canvas"
-      ></canvas>
-    </div>
+    <v-row>
+      <v-col>
+        <canvas
+          id="my_canvas"
+          ref="canvas"
+          width="300"
+          height="300"
+        ></canvas>
+      </v-col>
+      <v-col>
+        <v-expansion-panels>
 
-    <v-row justify="center">
-      <div id="undoWrapper" tabindex="0">
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <h3>Color</h3>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <div class="swatch-wrapper">
+                <v-swatches
+                  swatches="text-advanced"
+                  inline
+                  :value="artSetting.backgroundColor"
+                  @input="changeBackgroundColor"
+                >
+                </v-swatches>
+              </div>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <h3>Shape</h3>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-radio-group :value="artSetting.shape" @change="changeShape" row>
+                <v-radio 
+                  v-for="shape in shapes"
+                  :key="shape.label"
+                  :label="shape.label"
+                  :value="shape.value"
+                ></v-radio>
+              </v-radio-group>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <h3>Font Color</h3>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-radio-group :value="artSetting.textColor" @change="changeTextColor" row>
+                <v-radio label="Dark" value="random-dark"></v-radio>
+                <v-radio label="Light" value="random-light"></v-radio>
+              </v-radio-group>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
+          <v-expansion-panel>
+            <v-expansion-panel-header>
+              <h3>Font Size</h3>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-slider
+                :min="minTextSize"
+                :max="maxTextSize"
+                :value="artSetting.textSize"
+                :tick-labels="tickLabels"
+                @change="changeTextSize"
+                ticks="always"
+              >
+              </v-slider>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
+        </v-expansion-panels>
+
         <v-card>
-          <v-card-title>
-            <h2>Customise your cover</h2>
-          </v-card-title>
-          <v-card-text>
-            <h3 class="mb-5">Color</h3>
-            <v-color-picker
-              elevation="1"
-              class="mr-auto ml-auto"
-              width="500"
-              :value="artSetting.backgroundColor"
-              @input="changeBackgroundColor"
-            ></v-color-picker>
-
-            <h3 class="mt-3">Shape</h3>
-            <v-radio-group :value="artSetting.shape" @change="changeShape">
-              <v-radio label="Circle" color="success" value="circle"></v-radio>
-              <v-radio label="Square" color="success" value="square"></v-radio>
-              <v-radio
-                label="Diamond"
-                color="success"
-                value="diamond"
-              ></v-radio>
-              <v-radio label="Heart" color="success" value="cardioid"></v-radio>
-              <v-radio label="Star" color="success" value="star"></v-radio>
-              <v-radio
-                label="Pentagon"
-                color="success"
-                value="pentagon"
-              ></v-radio>
-            </v-radio-group>
-             <h3 class="mt-3">Text Color</h3>
-            <v-radio-group
-              :value="artSetting.textColor"
-              @change="changeTextColor"
-            >
-              <v-radio
-                label="Dark texts"
-                color="success"
-                value="random-dark"
-              ></v-radio>
-              <v-radio
-                label="Light texts"
-                color="success"
-                value="random-light"
-              ></v-radio>
-            </v-radio-group>
-              <h3 class="mt-3">Text Size</h3>
-            <v-slider
-              :min="minTextSize"
-              :max="maxTextSize"
-              :value="artSetting.textSize"
-              @change="changeTextSize"
-              ticks="always"
-              :tick-labels="tickLabels"
-            >
-            </v-slider>
-          </v-card-text>
           <v-card-actions>
-            <v-btn
-              color="success"
-              :loading="this.buttonLoading"
-              @click="convertTobase64"
-              >Set as Spotify playlist cover</v-btn
-            >
-            <v-btn color="success" @click="downloadCoverImage"
-              >Download cover</v-btn
-            >
+            <v-btn color="success" :loading="this.buttonLoading" @click="convertTobase64">
+              Set as Spotify playlist cover
+            </v-btn>
+            <v-btn color="success" @click="downloadCoverImage">
+              Download cover
+            </v-btn>
           </v-card-actions>
         </v-card>
-      </div>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 
 <script>
+import VSwatches from 'vue-swatches'
 import WordCloud from "wordcloud";
 import { mapState, mapActions } from "vuex";
 import axios from "axios";
 
 export default {
   name: "ResultPage",
-  components: {},
+  components: {
+    VSwatches
+  },
   data() {
     return {
       artSetting: {
@@ -104,38 +111,61 @@ export default {
         shape: "circle",
         textSize: 5,
       },
-      buttonLoading: false,
       minTextSize: 1,
       maxTextSize: 10,
-      tickLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-
       undo: [],
+      playlistId: '',
+      buttonLoading: false,
+      tickLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      shapes: [
+        {label: "Circle", value: "circle"},
+        {label: "Square", value: "square"},
+        {label: "Diamond", value: "diamond"},
+        {label: "Heart", value: "cardioid"},
+        {label: "Star", value: "star"},
+        {label: "Pentagon", value: "pentagon"},
+      ]
     };
   },
   computed: {
-    ...mapState("home", ["artists"]),
+    ...mapState("home", [
+      "artists",
+      "error",
+      "retrieveArtistsLoading"
+    ]),
   },
-  mounted() {
-    this.generateWordCloud(this.artists);
+  async mounted() {
+    this.playlistId = this.$route.query.playlistId
 
-    document.querySelector("#undoWrapper").addEventListener("keydown", (e) => {
-      if (this.getOS() === "Mac OS") {
-        if (e.metaKey && e.key === "z") {
-          this.undoArtSetting();
-        }
-      } else if (this.getOS() === "Windows" || this.getOS() === "Linux") {
-        if (e.ctrlKey && e.key === "z") {
-          this.undoArtSetting();
-        }
-      }
-    });
+    await this.retrievePlaylistArtists(this.playlistId)
+
+    if (this.error === null) {
+      this.generateWordCloud(this.artists)
+      //this.addUndoListener()
+    } else {
+      this.$router.push({ path: "/" })
+    }
   },
 
   methods: {
-    ...mapActions("home", ["setTokens", "retrievePlaylistArtists"]),
-    /**
-     * Change value of playlistLink when there is an input change in LinkForm
-     */
+    ...mapActions("home", [
+      "setTokens", 
+      "retrievePlaylistArtists"
+    ]),
+
+    addUndoListener() {
+      document.querySelector("#undoWrapper").addEventListener("keydown", (e) => {
+        if (this.getOS() === "Mac OS") {
+          if (e.metaKey && e.key === "z") {
+            this.undoArtSetting();
+          }
+        } else if (this.getOS() === "Windows" || this.getOS() === "Linux") {
+          if (e.ctrlKey && e.key === "z") {
+            this.undoArtSetting();
+          }
+        }
+      })
+    },
 
     getOS() {
       var userAgent = window.navigator.userAgent,
@@ -158,13 +188,6 @@ export default {
       }
 
       return os;
-    },
-
-    handleLinkChange(value) {
-      this.playlistLink = value;
-    },
-    async generateArt() {
-      await this.retrievePlaylistArtists(this.playlistId);
     },
 
     changeBackgroundColor(color) {
@@ -206,15 +229,15 @@ export default {
 
     generateWordCloud(list) {
       var options = {
-        gridSize: 4,
-        weightFactor: this.artSetting.textSize,
+        gridSize: 6,
         fontFamily: "Hiragino Mincho Pro, serif",
-        color: this.artSetting.textColor,
         shuffle: false,
         rotateRatio: 0,
         rotationSteps: 2,
-        backgroundColor: this.artSetting.backgroundColor,
         list: list,
+        color: this.artSetting.textColor,
+        weightFactor: this.artSetting.textSize,
+        backgroundColor: this.artSetting.backgroundColor,
         shape: this.artSetting.shape,
       };
       WordCloud(this.$refs["canvas"], options);
@@ -244,14 +267,13 @@ export default {
     },
 
     downloadCoverImage() {
-      var canvas = document.getElementById("my_canvas");
-      var image = canvas
-        .toDataURL("image/png", 1.0)
-        .replace("image/png", "image/octet-stream");
-      var link = document.createElement("a");
+      const canvas = document.getElementById("my_canvas");
+      const image = canvas.toDataURL("image/png", 1.0).replace("image/png", "image/octet-stream");
+      const link = document.createElement("a");
       link.download = "my-coverart.png";
       link.href = image;
       link.click();
+      link.remove();
     },
   },
 };
@@ -265,5 +287,14 @@ export default {
   height: 100%;
   justify-content: center;
   background-color: $light-white;
+}
+
+#my_canvas {
+  margin: 0 auto;
+  display: block;
+}
+
+.swatch-wrapper {
+  display: flex;
 }
 </style>
