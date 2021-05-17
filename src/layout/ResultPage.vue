@@ -9,7 +9,8 @@
               class="mr-16"
               elevataion="2"
               fab
-              color="success"
+              color="#1db954"
+              dark
               :loading="this.buttonLoading"
               @click="convertTobase64"
             >
@@ -18,7 +19,8 @@
             <v-btn
               elevataion="2"
               fab
-              color="success"
+              color="#1db954"
+              dark
               @click="downloadCoverImage"
             >
               <v-icon dark> mdi-download </v-icon>
@@ -70,12 +72,12 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-radio-group :value="artSetting.textColor" @change="changeTextColor" row>
-                <v-radio label="Grade Grey" value="GradeGrey"></v-radio>
-                <v-radio label="Yoda" value="Yoda"></v-radio>
-                <v-radio label="Cool Sky" value="CoolSky"></v-radio>
-                <v-radio label="Pure Lust" value="PureLust"></v-radio>
-                <v-radio label="Ohhappiness" value="Ohhappiness"></v-radio>
-                <v-radio label="Sunkist" value="Sunkist"></v-radio>
+                <v-radio dark label="Grade Grey" value="GradeGrey"></v-radio>
+                <v-radio dark label="Yoda" value="Yoda"></v-radio>
+                <v-radio dark label="Cool Sky" value="CoolSky"></v-radio>
+                <v-radio dark label="Pure Lust" value="PureLust"></v-radio>
+                <v-radio dark label="Ohhappiness" value="Ohhappiness"></v-radio>
+                <v-radio dark label="Sunkist" value="Sunkist"></v-radio>
               </v-radio-group>
               <!-- <v-swatches
                 inline
