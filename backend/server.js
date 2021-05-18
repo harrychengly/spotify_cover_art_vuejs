@@ -96,38 +96,12 @@ app.get('/callback', function (req, res) {
         var access_token = body.access_token,
           refresh_token = body.refresh_token
 
-        // var options = {
-        //   url: 'https://api.spotify.com/v1/playlists/2pQfOsK5FheoNZlN67akuB/tracks',
-        //   headers: { 'Authorization': 'Bearer ' + access_token },
-        //   json: true
-        // };
-
-        // // use the access token to access the Spotify Web API
-        // request.get(options, function(error, response, body) {
-        //   var bodyItems = body.items;
-        //   var bodyItemsLen = Object.keys(bodyItems).length
-
-        //   for(i = 0 ; i<bodyItemsLen; i++){
-        //     var artists = bodyItems[i]["track"]["artists"]
-        //     artists.forEach(element => {
-        //       console.log(element.name)
-        //     });
-        //     // console.log(Object.keys(artists).length)
-        //     // console.log(bodyItems[i]["track"]["artists"])
-        //   }
-        // });
-
         // we can also pass the token to the browser to make requests from there
         res.redirect('http://localhost:8080/?' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token
           }))
-        // res.set('Access-Control-Allow-Origin', '*')
-        // return res.status(200).send({
-        //     access_token,
-        //     refresh_token
-        // })
       } else {
         res.redirect('http://localhost:8080/?' +
           querystring.stringify({

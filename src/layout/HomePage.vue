@@ -88,36 +88,6 @@ export default {
       this.$router.push({ path: 'result', query: { playlistId: this.playlistId }})
     },
 
-    // async convertTobase64() {
-    //   const urlParams = new URLSearchParams(window.location.search);
-    //   const access_token = urlParams.get("access_token");
-    //   var canvas = document.getElementById("my_canvas");
-    //   var dataURL = canvas.toDataURL();
-    //   var strImage = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
-    //   try {
-    //     await axios.put(
-    //       "http://localhost:8888/change_image/?access_token=" + access_token + "&playlist_id=" + this.playlistId,
-    //       {
-    //         data: {
-    //           img: strImage,
-    //         },
-    //       }
-    //     );
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
-
-    downloadCoverImage() {
-      var canvas = document.getElementById("my_canvas");
-      var image = canvas
-        .toDataURL("image/png", 1.0)
-        .replace("image/png", "image/octet-stream");
-      var link = document.createElement("a");
-      link.download = "my-coverart.png";
-      link.href = image;
-      link.click();
-    },
   },
 };
 </script>
