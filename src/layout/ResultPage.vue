@@ -40,6 +40,27 @@
         </div>
       </v-col>
       <v-col>
+        <v-tooltip right>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              class="mr-10 mb-3"
+              elevataion="2"
+              dark
+              v-on="on"
+              @click="undoArtSetting"
+            >
+              <v-icon dark> mdi-undo</v-icon>
+            </v-btn>
+          </template>
+           <span class ="mr-3"> or </span>
+          <span v-if="getOS() === 'Mac OS' || 'Windows'">
+          <kbd v-if="getOS() === 'Mac OS'">cmd</kbd>
+          <kbd v-else-if="getOS() === 'Windows'">ctrl</kbd>
+          <span> + </span> <kbd>z</kbd>
+          <span class="ml-3">to undo</span>
+        </span>
+        </v-tooltip>
+
         <v-expansion-panels v-model="openedPanel">
           <v-expansion-panel class="expansionPanel">
             <v-expansion-panel-header>
@@ -61,7 +82,12 @@
               <h3>Shape</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-btn-toggle :value="artSetting.shape" @change="changeShape" dark borderless>
+              <v-btn-toggle
+                :value="artSetting.shape"
+                @change="changeShape"
+                dark
+                borderless
+              >
                 <v-btn v-for="shape in shapes" :key="shape.value" dark>
                   <v-icon>
                     {{ shape.icon }}
@@ -76,12 +102,17 @@
               <h3>Font Color</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-btn-toggle :value="artSetting.textColor" @change="changeTextColor" dark borderless>
+              <v-btn-toggle
+                :value="artSetting.textColor"
+                @change="changeTextColor"
+                dark
+                borderless
+              >
                 <v-btn
-                  v-for="gradient in gradients" 
-                  :key="gradient.label" 
+                  v-for="gradient in gradients"
+                  :key="gradient.label"
                   :style="getButtonGradientColor(gradient.light, gradient.dark)"
-                > 
+                >
                 </v-btn>
               </v-btn-toggle>
             </v-expansion-panel-content>
@@ -105,22 +136,6 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              class="mr-16"
-              elevataion="2"
-              color="#1db954"
-              dark
-              v-on="on"
-              @click="undoArtSetting"
-            >
-              <v-icon dark> mdi-undo</v-icon>
-            </v-btn>
-          </template>
-          <span>Undo</span>
-        </v-tooltip>
       </v-col>
     </v-row>
   </v-container>
@@ -157,13 +172,13 @@ export default {
       tickLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       colorGradient: null,
       gradients: [
-        { label: 'Grade Grey', light: '#BDC3C7', dark: '#2c3e50' },
-        { label: 'Yoda', light: '#FF0099', dark: '#493240' },
-        { label: 'Cool Sky', light: '#6DD5FA', dark: '#2980B9' },
-        { label: 'Pure Lust', light: '#dd1818', dark: '#333333' },
-        { label: 'Ohhappiness', light: '#96c93d', dark: '#00b09b' },
-        { label: 'WhatLiesBeyond', light: '#f0f2f0', dark: '#000c40' },
-        { label: 'Sunkist', light: '#F2C94C', dark: '#F2994A' },
+        { label: "Grade Grey", light: "#BDC3C7", dark: "#2c3e50" },
+        { label: "Yoda", light: "#FF0099", dark: "#493240" },
+        { label: "Cool Sky", light: "#6DD5FA", dark: "#2980B9" },
+        { label: "Pure Lust", light: "#dd1818", dark: "#333333" },
+        { label: "Ohhappiness", light: "#96c93d", dark: "#00b09b" },
+        { label: "WhatLiesBeyond", light: "#f0f2f0", dark: "#000c40" },
+        { label: "Sunkist", light: "#F2C94C", dark: "#F2994A" },
       ],
       shapes: [
         { label: "Circle", value: "circle", icon: "mdi-checkbox-blank-circle" },
@@ -195,7 +210,7 @@ export default {
 
     if (this.error === null) {
       this.generateWordCloud(this.artists);
-      this.addUndoListener()
+      this.addUndoListener();
     } else {
       this.$router.push({ path: "/" });
     }
@@ -212,8 +227,8 @@ export default {
     },
     getButtonGradientColor(light, dark) {
       return {
-        background: `linear-gradient(90deg, ${light}, ${dark})`
-      }     
+        background: `linear-gradient(90deg, ${light}, ${dark})`,
+      };
     },
 
     addUndoListener() {
@@ -309,7 +324,7 @@ export default {
 
       var options = {
         gridSize: 6,
-        fontFamily: "Gotham",
+        fontFamily: "Gotham Bold",
         shuffle: false,
         rotateRatio: 0,
         rotationSteps: 2,
@@ -379,7 +394,7 @@ export default {
 }
 
 body {
-  font-family: "Gotham", Arial;
+  font-family: "Gotham Bold", Arial;
   font-size: 100px;
   background: #eef2f7;
 }

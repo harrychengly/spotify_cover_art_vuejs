@@ -5,17 +5,13 @@
       :placeholder="$LOCAL('LINK_FORM_PLACEHOLDER')"
       :rules="[rules.required, rules.validLink]"
       outlined
-      color="success"
+      dark
       autocomplete="off"
       @input="handleInputChange"
       :full-width="true"
       :success-messages="successMessage"
     />
-    <v-btn
-      color="success"
-      :disabled="!valid"
-      @click="generateArt"
-    >
+    <v-btn dark color="#191414" :disabled="!valid" @click="generateArt">
       Generate
     </v-btn>
   </v-form>
@@ -23,34 +19,35 @@
 
 <script>
 export default {
-  name: 'LinkForm',
+  name: "LinkForm",
   data() {
     return {
       valid: false, // Check if input is valid
       rules: {
-        required: value => {
+        required: (value) => {
           // Link cannot be empty
-          this.valid = value !== ''
-          return this.valid || 'Playlist link is required'
+          this.valid = value !== "";
+          return this.valid || "Playlist link is required";
         },
-        validLink: value => {
+        validLink: (value) => {
           // Link must be valud
-          this.valid = value.length === 76 && value.match(this.$LOCAL('LINK_REGEX'))
-          return this.valid || this.$LOCAL('LINK_INVALID')
-        }
-      }
+          this.valid =
+            value.length === 76 && value.match(this.$LOCAL("LINK_REGEX"));
+          return this.valid || this.$LOCAL("LINK_INVALID");
+        },
+      },
     };
   },
   props: {
     playlistLink: {
       type: String,
-      default: ''
-    }
-  },  
+      default: "",
+    },
+  },
   computed: {
     successMessage() {
-      return this.valid ? 'Playlist link is valid' : ''
-    }
+      return this.valid ? "Playlist link is valid" : "";
+    },
   },
   methods: {
     /**
@@ -58,7 +55,7 @@ export default {
      * Emit link-change event to HomePage and mutate playlistLink value.
      */
     handleInputChange(value) {
-      this.$emit("link-change", value)
+      this.$emit("link-change", value);
     },
 
     /**
@@ -73,18 +70,14 @@ export default {
      * Emit generate-art event to HomePage and generate word cloud.
      */
     async generateArt() {
-
-      this.$emit('generate-art')
+      this.$emit("generate-art");
     },
-
-  }
+  },
 };
 </script>
 
 <style scoped lang='scss'>
-
 ::v-deep input {
   text-align: center;
 }
-
 </style>

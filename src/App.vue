@@ -36,16 +36,21 @@ export default {
 <style>
 @font-face {
   font-family: "Gotham Bold";
-  src: local("Gotham Bold"), url(./fonts/Gotham/GothamBold.ttf) format("truetype");
+  src: local("Gotham Bold"), url(./fonts/Gotham/Gotham-Bold.otf) format("opentype");
 }
 
 @font-face {
   font-family: "Gotham Light";
-  src: local("Gotham Light"), url(./fonts/Gotham/GothamLight.ttf) format("truetype");
+  src: local("Gotham Light"), url(./fonts/Gotham/Gotham-Light.otf) format("opentype");
 }
 
 @font-face {
-  font-family: "Gotham Medium";
-  src: local("Gotham Medium"), url(./fonts/Gotham/GothamMedium.ttf) format("truetype");
+  font-family: "Gotham Thin";
+  src: local("Gotham Thin"), url(./fonts/Gotham/Gotham-Thin.otf) format("opentype");
+}
+
+@font-face {
+  font-family: "Gotham Book";
+  src: local("Gotham Book"), url(./fonts/Gotham/Gotham-BookItalic.otf) format("opentype");
 }
 </style>
