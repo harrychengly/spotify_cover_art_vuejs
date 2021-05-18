@@ -61,11 +61,11 @@
               <h3>Shape</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-btn-toggle :value="artSetting.shape" @change="changeShape" dark>
+              <v-btn-toggle :value="artSetting.shape" @change="changeShape" dark borderless>
                 <v-btn v-for="shape in shapes" :key="shape.value" dark>
-                    <v-icon>
-                      {{ shape.icon }}
-                    </v-icon>
+                  <v-icon>
+                    {{ shape.icon }}
+                  </v-icon>
                 </v-btn>
               </v-btn-toggle>
             </v-expansion-panel-content>
@@ -76,18 +76,14 @@
               <h3>Font Color</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-radio-group
-                :value="artSetting.textColor"
-                @change="changeTextColor"
-                row
-              >
-                <v-radio dark label="Grade Grey" value="GradeGrey"></v-radio>
-                <v-radio dark label="Yoda" value="Yoda"></v-radio>
-                <v-radio dark label="Cool Sky" value="CoolSky"></v-radio>
-                <v-radio dark label="Pure Lust" value="PureLust"></v-radio>
-                <v-radio dark label="Ohhappiness" value="Ohhappiness"></v-radio>
-                <v-radio dark label="Sunkist" value="Sunkist"></v-radio>
-              </v-radio-group>
+              <v-btn-toggle :value="artSetting.textColor" @change="changeTextColor" dark borderless>
+                <v-btn
+                  v-for="gradient in gradients" 
+                  :key="gradient.label" 
+                  :style="getButtonGradientColor(gradient.light, gradient.dark)"
+                > 
+                </v-btn>
+              </v-btn-toggle>
             </v-expansion-panel-content>
           </v-expansion-panel>
 
@@ -131,8 +127,8 @@ export default {
   data() {
     return {
       artSetting: {
-        textColor: "GradeGrey",
         backgroundColor: "#FFF",
+        textColor: 0,
         shape: 0,
         textSize: 5,
       },
@@ -143,36 +139,15 @@ export default {
       buttonLoading: false,
       tickLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       colorGradient: null,
-      gradientMap: {
-        GradeGrey: {
-          light: "#BDC3C7",
-          dark: "#2c3e50",
-        },
-        Yoda: {
-          dark: "#493240",
-          light: "#FF0099",
-        },
-        CoolSky: {
-          light: "#6DD5FA",
-          dark: "#2980B9",
-        },
-        PureLust: {
-          light: "#dd1818",
-          dark: "#333333",
-        },
-        Ohhappiness: {
-          light: "#96c93d",
-          dark: "#00b09b",
-        },
-        Sunkist: {
-          light: "#F2C94C",
-          dark: "#F2994A",
-        },
-        WhatLiesBeyond: {
-          light: "#f0f2f0",
-          dark: "#000c40",
-        },
-      },
+      gradients: [
+        { label: 'Grade Grey', light: '#BDC3C7', dark: '#2c3e50' },
+        { label: 'Yoda', light: '#FF0099', dark: '#493240' },
+        { label: 'Cool Sky', light: '#6DD5FA', dark: '#2980B9' },
+        { label: 'Pure Lust', light: '#dd1818', dark: '#333333' },
+        { label: 'Ohhappiness', light: '#96c93d', dark: '#00b09b' },
+        { label: 'WhatLiesBeyond', light: '#f0f2f0', dark: '#000c40' },
+        { label: 'Sunkist', light: '#F2C94C', dark: '#F2994A' },
+      ],
       shapes: [
         { label: "Circle", value: "circle", icon: "mdi-checkbox-blank-circle" },
         { label: "Square", value: "square", icon: "mdi-square" },
@@ -211,6 +186,12 @@ export default {
 
   methods: {
     ...mapActions("home", ["setTokens", "retrievePlaylistArtists"]),
+
+    getButtonGradientColor(light, dark) {
+      return {
+        background: `linear-gradient(90deg, ${light}, ${dark})`
+      }     
+    },
 
     addUndoListener() {
       document
@@ -263,9 +244,9 @@ export default {
       this.generateWordCloud(this.artists);
     },
 
-    changeTextColor(textColor) {
+    changeTextColor(id) {
       this.addUndoState();
-      this.artSetting.textColor = textColor;
+      this.artSetting.textColor = id;
       this.generateWordCloud(this.artists);
     },
 
@@ -291,8 +272,8 @@ export default {
     generateColorGradient() {
       const colorGradient = new Gradient();
       colorGradient.setMidpoint(this.maxArtistFrequency);
-      const colorOne = this.gradientMap[this.artSetting.textColor].light;
-      const colorTwo = this.gradientMap[this.artSetting.textColor].dark;
+      const colorOne = this.gradients[this.artSetting.textColor].light;
+      const colorTwo = this.gradients[this.artSetting.textColor].dark;
       colorGradient.setGradient(colorOne, colorTwo);
       this.colorGradient = colorGradient;
     },
