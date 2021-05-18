@@ -50,19 +50,13 @@
               <h3>Shape</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-radio-group
-                :value="artSetting.shape"
-                @change="changeShape"
-                row
-              >
-                <v-radio
-                  v-for="shape in shapes"
-                  :key="shape.label"
-                  :label="shape.label"
-                  :value="shape.value"
-                  dark
-                ></v-radio>
-              </v-radio-group>
+              <v-btn-toggle :value="artSetting.shape" @change="changeShape" dark>
+                <v-btn v-for="shape in shapes" :key="shape.value" dark>
+                    <v-icon>
+                      {{ shape.icon }}
+                    </v-icon>
+                </v-btn>
+              </v-btn-toggle>
             </v-expansion-panel-content>
           </v-expansion-panel>
 
@@ -79,15 +73,6 @@
                 <v-radio dark label="Ohhappiness" value="Ohhappiness"></v-radio>
                 <v-radio dark label="Sunkist" value="Sunkist"></v-radio>
               </v-radio-group>
-              <!-- <v-swatches
-                inline
-                :value="artSetting.textColor"
-                @input="changeTextColor"
-                :swatches="['#C0392B', '#E74C3C', '#9B59B6', '#8E44AD', '#2980B9', '#3498DB', '#1ABC9C'
-                , '#16A085', '#27AE60', '#2ECC71', '#F1C40F', '#F39C12', '#E67E22', '#D35400', '#ECF0F1', '#BDC3C7',
-                '#95A5A6', '#7F8C8D', '#34495E', '#2C3E50']"
-              >
-              </v-swatches> -->
             </v-expansion-panel-content>
           </v-expansion-panel>
 
@@ -110,16 +95,6 @@
           </v-expansion-panel>
         </v-expansion-panels>
 
-        <!-- <v-card>
-          <v-card-actions>
-            <v-btn color="success" :loading="this.buttonLoading" @click="convertTobase64">
-              Set as Spotify playlist cover
-            </v-btn>
-            <v-btn color="success" @click="downloadCoverImage">
-              Download cover
-            </v-btn>
-          </v-card-actions>
-        </v-card> -->
       </v-col>
     </v-row>
   </v-container>
@@ -143,7 +118,7 @@ export default {
       artSetting: {
         textColor: "GradeGrey",
         backgroundColor: "#FFF",
-        shape: "circle",
+        shape: 0,
         textSize: 5,
       },
       minTextSize: 1,
@@ -184,12 +159,12 @@ export default {
         }
       },
       shapes: [
-        { label: "Circle", value: "circle" },
-        { label: "Square", value: "square" },
-        { label: "Diamond", value: "diamond" },
-        { label: "Heart", value: "cardioid" },
-        { label: "Star", value: "star" },
-        { label: "Pentagon", value: "pentagon" },
+        { label: "Circle", value: "circle", icon: "mdi-checkbox-blank-circle" },
+        { label: "Square", value: "square", icon: "mdi-square" },
+        { label: "Diamond", value: "diamond", icon: "mdi-cards-diamond" },
+        { label: "Heart", value: "cardioid", icon: "mdi-cards-heart" },
+        { label: "Star", value: "star", icon: "mdi-star" },
+        { label: "Pentagon", value: "pentagon", icon: "mdi-pentagon" },
       ],
     };
   },
@@ -267,9 +242,9 @@ export default {
       this.generateWordCloud(this.artists);
     },
 
-    changeShape(shape) {
+    changeShape(id) {
       this.addUndoState();
-      this.artSetting.shape = shape;
+      this.artSetting.shape = id;
       this.generateWordCloud(this.artists);
     },
 
@@ -322,7 +297,7 @@ export default {
         },
         weightFactor: this.artSetting.textSize,
         backgroundColor: this.artSetting.backgroundColor,
-        shape: this.artSetting.shape,
+        shape: this.shapes[this.artSetting.shape].value,
       };
 
       WordCloud(this.$refs["canvas"], options);
@@ -376,7 +351,7 @@ export default {
     0 100px 80px rgba(0, 0, 0, 0.12);
   width: 300px;
   height: 300px;
-  margin: 100px auto;
+  margin: 0 auto;
   background: white;
   border-radius: 5px;
 }
