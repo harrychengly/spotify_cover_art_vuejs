@@ -40,7 +40,7 @@
         </div>
       </v-col>
       <v-col>
-        <v-expansion-panels>
+        <v-expansion-panels v-model="openedPanel">
           <v-expansion-panel class="expansionPanel">
             <v-expansion-panel-header>
               <h3>Color</h3>
@@ -61,11 +61,15 @@
               <h3>Shape</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-btn-toggle :value="artSetting.shape" @change="changeShape" dark>
+              <v-btn-toggle
+                :value="artSetting.shape"
+                @change="changeShape"
+                dark
+              >
                 <v-btn v-for="shape in shapes" :key="shape.value" dark>
-                    <v-icon>
-                      {{ shape.icon }}
-                    </v-icon>
+                  <v-icon>
+                    {{ shape.icon }}
+                  </v-icon>
                 </v-btn>
               </v-btn-toggle>
             </v-expansion-panel-content>
@@ -110,6 +114,21 @@
           </v-expansion-panel>
         </v-expansion-panels>
 
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              class="mr-16"
+              elevataion="2"
+              color="#1db954"
+              dark
+              v-on="on"
+              @click="undoArtSetting"
+            >
+              <v-icon dark> mdi-undo</v-icon>
+            </v-btn>
+          </template>
+          <span>Undo</span>
+        </v-tooltip>
       </v-col>
     </v-row>
   </v-container>
@@ -130,11 +149,13 @@ export default {
   },
   data() {
     return {
+      openedPanel: null,
       artSetting: {
         textColor: "GradeGrey",
         backgroundColor: "#FFF",
         shape: 0,
         textSize: 5,
+        activePanel: null,
       },
       minTextSize: 1,
       maxTextSize: 10,
@@ -203,7 +224,7 @@ export default {
 
     if (this.error === null) {
       this.generateWordCloud(this.artists);
-      //this.addUndoListener()
+      this.addUndoListener()
     } else {
       this.$router.push({ path: "/" });
     }
@@ -212,20 +233,25 @@ export default {
   methods: {
     ...mapActions("home", ["setTokens", "retrievePlaylistArtists"]),
 
+    closeAllPanels() {
+      this.openedPanel = null;
+    },
+    openPanel(index) {
+      this.openedPanel = index;
+    },
+
     addUndoListener() {
-      document
-        .querySelector("#undoWrapper")
-        .addEventListener("keydown", (e) => {
-          if (this.getOS() === "Mac OS") {
-            if (e.metaKey && e.key === "z") {
-              this.undoArtSetting();
-            }
-          } else if (this.getOS() === "Windows" || this.getOS() === "Linux") {
-            if (e.ctrlKey && e.key === "z") {
-              this.undoArtSetting();
-            }
+      document.addEventListener("keydown", (e) => {
+        if (this.getOS() === "Mac OS") {
+          if (e.metaKey && e.key === "z") {
+            this.undoArtSetting();
           }
-        });
+        } else if (this.getOS() === "Windows" || this.getOS() === "Linux") {
+          if (e.ctrlKey && e.key === "z") {
+            this.undoArtSetting();
+          }
+        }
+      });
     },
 
     getOS() {
@@ -254,24 +280,28 @@ export default {
     changeBackgroundColor(color) {
       this.addUndoState();
       this.artSetting.backgroundColor = color;
+      this.artSetting.activePanel = 0;
       this.generateWordCloud(this.artists);
     },
 
     changeShape(id) {
       this.addUndoState();
       this.artSetting.shape = id;
+      this.artSetting.activePanel = 1;
       this.generateWordCloud(this.artists);
     },
 
     changeTextColor(textColor) {
       this.addUndoState();
       this.artSetting.textColor = textColor;
+      this.artSetting.activePanel = 2;
       this.generateWordCloud(this.artists);
     },
 
     changeTextSize(textSize) {
       this.addUndoState();
       this.artSetting.textSize = textSize;
+      this.artSetting.activePanel = 3;
       this.generateWordCloud(this.artists);
     },
 
@@ -282,6 +312,7 @@ export default {
 
     undoArtSetting() {
       if (this.undo.length != 0) {
+        this.openPanel(this.artSetting.activePanel);
         this.artSetting = this.undo[this.undo.length - 1];
         this.undo = this.undo.slice(0, -1);
         this.generateWordCloud(this.artists);
