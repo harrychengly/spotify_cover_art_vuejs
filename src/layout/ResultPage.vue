@@ -40,7 +40,7 @@
         </div>
       </v-col>
       <v-col>
-        <v-expansion-panels v-model="openedPanel">
+        <v-expansion-panels v-model="artSetting.activePanel">
           <v-expansion-panel class="expansionPanel">
             <v-expansion-panel-header>
               <h3>Color</h3>
@@ -78,10 +78,13 @@
             <v-expansion-panel-content>
               <v-btn-toggle :value="artSetting.textColor" @change="changeTextColor" dark borderless>
                 <v-btn
-                  v-for="gradient in gradients" 
+                  v-for="(gradient, index) in gradients" 
                   :key="gradient.label" 
                   :style="getButtonGradientColor(gradient.light, gradient.dark)"
-                > 
+                >
+                  <v-icon v-if="index === artSetting.textColor">
+                    mdi-check-circle-outline
+                  </v-icon>
                 </v-btn>
               </v-btn-toggle>
             </v-expansion-panel-content>
@@ -141,7 +144,6 @@ export default {
   },
   data() {
     return {
-      openedPanel: null,
       artSetting: {
         backgroundColor: "#FFF",
         textColor: 0,
@@ -204,12 +206,6 @@ export default {
   methods: {
     ...mapActions("home", ["setTokens", "retrievePlaylistArtists"]),
 
-    closeAllPanels() {
-      this.openedPanel = null;
-    },
-    openPanel(index) {
-      this.openedPanel = index;
-    },
     getButtonGradientColor(light, dark) {
       return {
         background: `linear-gradient(90deg, ${light}, ${dark})`
@@ -254,31 +250,43 @@ export default {
     },
 
     changeBackgroundColor(color) {
-      this.addUndoState();
-      this.artSetting.backgroundColor = color;
-      this.artSetting.activePanel = 0;
-      this.generateWordCloud(this.artists);
+      const before = this.artSetting.backgroundColor
+      if (before !== color) {
+        this.addUndoState();
+        this.artSetting.backgroundColor = color;
+        this.artSetting.activePanel = 0;
+        this.generateWordCloud(this.artists); 
+      }
     },
 
     changeShape(id) {
-      this.addUndoState();
-      this.artSetting.shape = id;
-      this.artSetting.activePanel = 1;
-      this.generateWordCloud(this.artists);
+      const before = this.artSetting.shape
+      if (id != undefined && before !== id) {
+        this.addUndoState();
+        this.artSetting.shape = id;
+        this.artSetting.activePanel = 1;
+        this.generateWordCloud(this.artists);
+      }
     },
 
     changeTextColor(id) {
-      this.addUndoState();
-      this.artSetting.textColor = id;
-      this.artSetting.activePanel = 2;
-      this.generateWordCloud(this.artists);
+      const before = this.artSetting.textColor
+      if (id !== undefined && before !== id) {
+        this.addUndoState();
+        this.artSetting.textColor = id;
+        this.artSetting.activePanel = 2;
+        this.generateWordCloud(this.artists);
+      }
     },
 
     changeTextSize(textSize) {
-      this.addUndoState();
-      this.artSetting.textSize = textSize;
-      this.artSetting.activePanel = 3;
-      this.generateWordCloud(this.artists);
+      const before = this.artSetting.textSize
+      if (before !== textSize) {
+        this.addUndoState();
+        this.artSetting.textSize = textSize;
+        this.artSetting.activePanel = 3;
+        this.generateWordCloud(this.artists);
+      }
     },
 
     addUndoState() {
@@ -288,7 +296,6 @@ export default {
 
     undoArtSetting() {
       if (this.undo.length != 0) {
-        this.openPanel(this.artSetting.activePanel);
         this.artSetting = this.undo[this.undo.length - 1];
         this.undo = this.undo.slice(0, -1);
         this.generateWordCloud(this.artists);
