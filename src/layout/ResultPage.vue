@@ -5,26 +5,37 @@
         <div class="box">
           <canvas id="my_canvas" ref="canvas" width="300" height="300"></canvas>
           <div class="button">
-            <v-btn
-              class="mr-16"
-              elevataion="2"
-              fab
-              color="#1db954"
-              dark
-              :loading="this.buttonLoading"
-              @click="convertTobase64"
-            >
-              <v-icon dark> mdi-cloud-upload</v-icon>
-            </v-btn>
-            <v-btn
-              elevataion="2"
-              fab
-              color="#1db954"
-              dark
-              @click="downloadCoverImage"
-            >
-              <v-icon dark> mdi-download </v-icon>
-            </v-btn>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  class="mr-16"
+                  elevataion="2"
+                  fab
+                  color="#1db954"
+                  dark
+                  v-on="on"
+                  @click="convertTobase64"
+                >
+                  <v-icon dark> mdi-cloud-upload</v-icon>
+                </v-btn>
+              </template>
+              <span>Upload to Spotify</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  elevataion="2"
+                  fab
+                  color="#1db954"
+                  dark
+                  v-on="on"
+                  @click="downloadCoverImage"
+                >
+                  <v-icon dark> mdi-download </v-icon>
+                </v-btn>
+              </template>
+              <span>Download</span>
+            </v-tooltip>
           </div>
         </div>
       </v-col>
@@ -34,14 +45,14 @@
             <v-expansion-panel-header>
               <h3>Color</h3>
             </v-expansion-panel-header>
-            <v-expansion-panel-content class ="expansionPanel">
-                <v-swatches
-                  swatches="text-advanced"
-                  inline
-                  :value="artSetting.backgroundColor"
-                  @input="changeBackgroundColor"
-                >
-                </v-swatches>
+            <v-expansion-panel-content class="expansionPanel">
+              <v-swatches
+                swatches="text-advanced"
+                inline
+                :value="artSetting.backgroundColor"
+                @input="changeBackgroundColor"
+              >
+              </v-swatches>
             </v-expansion-panel-content>
           </v-expansion-panel>
 
@@ -71,7 +82,11 @@
               <h3>Font Color</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <v-radio-group :value="artSetting.textColor" @change="changeTextColor" row>
+              <v-radio-group
+                :value="artSetting.textColor"
+                @change="changeTextColor"
+                row
+              >
                 <v-radio dark label="Grade Grey" value="GradeGrey"></v-radio>
                 <v-radio dark label="Yoda" value="Yoda"></v-radio>
                 <v-radio dark label="Cool Sky" value="CoolSky"></v-radio>
@@ -128,7 +143,7 @@
 
 <script>
 import Gradient from "javascript-color-gradient";
-import VSwatches from 'vue-swatches'
+import VSwatches from "vue-swatches";
 import WordCloud from "wordcloud";
 import { mapState, mapActions } from "vuex";
 import axios from "axios";
@@ -154,34 +169,34 @@ export default {
       tickLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       colorGradient: null,
       gradientMap: {
-        "GradeGrey": {
+        GradeGrey: {
           light: "#BDC3C7",
-          dark: "#2c3e50"
+          dark: "#2c3e50",
         },
-        "Yoda": {
+        Yoda: {
           dark: "#493240",
-          light: "#FF0099"
+          light: "#FF0099",
         },
-        "CoolSky": {
+        CoolSky: {
           light: "#6DD5FA",
           dark: "#2980B9",
         },
-        "PureLust": {
+        PureLust: {
           light: "#dd1818",
-          dark: "#333333"
+          dark: "#333333",
         },
-        "Ohhappiness": {
+        Ohhappiness: {
           light: "#96c93d",
-          dark: "#00b09b"
+          dark: "#00b09b",
         },
-        "Sunkist": {
+        Sunkist: {
           light: "#F2C94C",
-          dark: "#F2994A"
+          dark: "#F2994A",
         },
-        "WhatLiesBeyond": {
+        WhatLiesBeyond: {
           light: "#f0f2f0",
           dark: "#000c40",
-        }
+        },
       },
       shapes: [
         { label: "Circle", value: "circle" },
@@ -198,13 +213,13 @@ export default {
       "artists",
       "maxArtistFrequency",
       "error",
-      "retrieveArtistsLoading"
+      "retrieveArtistsLoading",
     ]),
     bodyBackgroundColor() {
       return {
-        "background": `linear-gradient(120deg, ${this.artSetting.backgroundColor}, #191414)`
-      }
-    }
+        background: `linear-gradient(120deg, ${this.artSetting.backgroundColor}, #191414)`,
+      };
+    },
   },
   async mounted() {
     this.playlistId = this.$route.query.playlistId;
@@ -301,14 +316,14 @@ export default {
     generateColorGradient() {
       const colorGradient = new Gradient();
       colorGradient.setMidpoint(this.maxArtistFrequency);
-      const colorOne = this.gradientMap[this.artSetting.textColor].light
-      const colorTwo = this.gradientMap[this.artSetting.textColor].dark
+      const colorOne = this.gradientMap[this.artSetting.textColor].light;
+      const colorTwo = this.gradientMap[this.artSetting.textColor].dark;
       colorGradient.setGradient(colorOne, colorTwo);
-      this.colorGradient = colorGradient
+      this.colorGradient = colorGradient;
     },
 
     generateWordCloud(list) {
-      this.generateColorGradient()
+      this.generateColorGradient();
 
       var options = {
         gridSize: 6,
@@ -318,7 +333,7 @@ export default {
         rotationSteps: 2,
         list: list,
         color: (_, weight) => {
-          return this.colorGradient.getColor(weight)
+          return this.colorGradient.getColor(weight);
         },
         weightFactor: this.artSetting.textSize,
         backgroundColor: this.artSetting.backgroundColor,
@@ -384,7 +399,7 @@ export default {
 body {
   font-family: "Gotham", Arial;
   font-size: 100px;
-  background: #EEF2F7;
+  background: #eef2f7;
 }
 
 .body-wrapper {
@@ -405,8 +420,8 @@ body {
   color: white !important;
 }
 
-.radioGroup{
-  color:#eef2f7;
+.radioGroup {
+  color: #eef2f7;
 }
 .button {
   justify-content: center;
