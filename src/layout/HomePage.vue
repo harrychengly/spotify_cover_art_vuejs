@@ -18,12 +18,21 @@
         <div v-else>
           <VueTyper
             :pre-type-delay="600"
-            erase-style='clear'
+            erase-style="clear"
             :repeat="0"
-            :text='["Hello 👋", "We make art 🎨 with music 🎵", "Log in to continue 😄"]'
+            :text="[
+              'Hello 👋',
+              'We make art 🎨 with music 🎵',
+              'Login to continue 😄',
+            ]"
           />
-          <v-btn :link="true" href="http://localhost:8888/login" color="success">
-            Log in with Spotify
+          <v-btn
+            dark
+            :link="true"
+            href="http://localhost:8888/login"
+            color="#191414"
+          >
+            Login with Spotify
           </v-btn>
         </div>
       </div>
@@ -32,74 +41,69 @@
 </template>
 
 <script>
-import { VueTyper } from 'vue-typer'
-import { mapState, mapActions } from "vuex"
+import { VueTyper } from "vue-typer";
+import { mapState, mapActions } from "vuex";
 
-import LinkForm from "../components/LinkForm"
-import HelperModal from "../components/HelperModal"
+import LinkForm from "../components/LinkForm";
+import HelperModal from "../components/HelperModal";
 
 export default {
   name: "HomePage",
   components: {
     LinkForm,
     HelperModal,
-    VueTyper
+    VueTyper,
   },
   data() {
     return {
       show: false,
-      playlistLink: '',
+      playlistLink: "",
     };
   },
   computed: {
-    ...mapState('home', [
-      'artists',
-      'userIsLoggedIn',
-      'error',
-    ]),
+    ...mapState("home", ["artists", "userIsLoggedIn", "error"]),
     /**
      * Retrieves the playlistId from the playlist link
      */
     playlistId() {
-      return this.playlistLink.split("?")[0].split("/")[4]
-    }
+      return this.playlistLink.split("?")[0].split("/")[4];
+    },
   },
   mounted() {
-    this.show = true
+    this.show = true;
   },
 
   methods: {
-    ...mapActions('home', [
-      'setTokens',
-      'retrievePlaylistArtists',
-    ]),
+    ...mapActions("home", ["setTokens", "retrievePlaylistArtists"]),
 
     /**
      * Change value of playlistLink when there is an input change in LinkForm
      */
     handleLinkChange(value) {
-      this.playlistLink = value
+      this.playlistLink = value;
     },
 
     /**
      * Generate the playlist art
      */
-    async generateArt () {
-      this.$router.push({ path: 'result', query: { playlistId: this.playlistId }})
+    async generateArt() {
+      this.$router.push({
+        path: "result",
+        query: { playlistId: this.playlistId },
+      });
     },
-
   },
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @import "@/styles/colors.scss";
 
 .body-wrapper {
   display: flex;
   height: 100%;
   justify-content: center;
-  background-color: $light-white;
+  background: linear-gradient(120deg, #1db954,30%, #191414);
 
   .form-wrapper {
     text-align: center;
@@ -114,9 +118,23 @@ export default {
 }
 
 .vue-typer {
+  font-family: "Gotham Book", Times, sans-serif;
   display: block;
   font-size: 2rem;
   margin-bottom: 1rem;
+  color: $light-white;
+}
+
+.vue-typer .custom.char.typed {
+  color: $light-white;
+}
+
+.vue-typer .custom.caret.typing {
+  background-color: $light-white;
+}
+.vue-typer .custom.caret.selecting {
+  display: inline-block;
+  background-color: $light-white;
 }
 
 .drop-enter-active {

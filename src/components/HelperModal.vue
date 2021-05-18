@@ -33,6 +33,7 @@ export default {
 <style scoped lang="scss">
 
 .helper-text {
+  color: white;
   cursor: pointer;
   width: fit-content;
   margin: 0.3rem auto;
