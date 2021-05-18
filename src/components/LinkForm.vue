@@ -35,7 +35,7 @@ export default {
         },
         validLink: value => {
           // Link must be valud
-          this.valid = value.match(this.$LOCAL('LINK_REGEX')) && value.length === 76
+          this.valid = value.length === 76 && value.match(this.$LOCAL('LINK_REGEX'))
           return this.valid || this.$LOCAL('LINK_INVALID')
         }
       }
