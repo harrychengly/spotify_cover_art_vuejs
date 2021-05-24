@@ -22,6 +22,8 @@ var client_id = process.env.CLIENT_ID // Your client id
 var client_secret = process.env.CLIENT_SECRET // Your secret
 var redirect_uri = process.env.REDIRECT_URI // Your redirect uri
 
+const PORT = process.env.PORT || 8888
+
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -175,5 +177,5 @@ app.get('/.*/', function (req, res) {
   res.sendFile(path.join(__dirname, '/dist/index.html'))
 })
 
-console.log('Listening on 8888')
-app.listen(8888)
+console.log(`Listening on ${PORT}`)
+app.listen(PORT)
