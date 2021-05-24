@@ -6,7 +6,7 @@
           <VueTyper
             :pre-type-delay="600"
             :repeat="0"
-            text="where art 🎨 meets music 🎵"
+            text="create spotify playlist art ⬜"
           />
           <LinkForm
             :playlistLink="playlistLink"
@@ -21,9 +21,9 @@
             erase-style="clear"
             :repeat="0"
             :text="[
-              'Hello 👋',
-              'We make art 🎨 with music 🎵',
-              'Login to continue 😄',
+              'hello 👋',
+              'create spotify playlist art ⬜',
+              'login to continue 😄',
             ]"
           />
           <v-btn

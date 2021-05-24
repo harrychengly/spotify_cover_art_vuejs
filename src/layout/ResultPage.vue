@@ -2,6 +2,14 @@
   <v-container fluid class="body-wrapper" :style="bodyBackgroundColor">
     <v-row>
       <v-col>
+        <v-btn
+          class="mb-3"
+          elevataion="2"
+          dark
+          @click="goHome"
+        >
+          <v-icon dark> mdi-arrow-left</v-icon>TRY ANOTHER PLAYLIST
+        </v-btn>
         <div class="box">
           <canvas id="my_canvas" ref="canvas" width="300" height="300"></canvas>
           <div class="button">
@@ -52,13 +60,13 @@
               <v-icon dark> mdi-undo</v-icon>
             </v-btn>
           </template>
-           <span class ="mr-3"> or </span>
+          <span class="mr-3"> or </span>
           <span v-if="getOS() === 'Mac OS' || 'Windows'">
-          <kbd v-if="getOS() === 'Mac OS'">cmd</kbd>
-          <kbd v-else-if="getOS() === 'Windows'">ctrl</kbd>
-          <span> + </span> <kbd>z</kbd>
-          <span class="ml-3">to undo</span>
-        </span>
+            <kbd v-if="getOS() === 'Mac OS'">cmd</kbd>
+            <kbd v-else-if="getOS() === 'Windows'">ctrl</kbd>
+            <span> + </span> <kbd>z</kbd>
+            <span class="ml-3">to undo</span>
+          </span>
         </v-tooltip>
 
         <v-expansion-panels v-model="artSetting.activePanel">
@@ -109,8 +117,8 @@
                 borderless
               >
                 <v-btn
-                  v-for="(gradient, index) in gradients" 
-                  :key="gradient.label" 
+                  v-for="(gradient, index) in gradients"
+                  :key="gradient.label"
                   :style="getButtonGradientColor(gradient.light, gradient.dark)"
                 >
                   <v-icon v-if="index === artSetting.textColor">
@@ -206,6 +214,7 @@ export default {
     },
   },
   async mounted() {
+    
     this.playlistId = this.$route.query.playlistId;
 
     await this.retrievePlaylistArtists(this.playlistId);
@@ -265,17 +274,17 @@ export default {
     },
 
     changeBackgroundColor(color) {
-      const before = this.artSetting.backgroundColor
+      const before = this.artSetting.backgroundColor;
       if (before !== color) {
         this.addUndoState();
         this.artSetting.backgroundColor = color;
         this.artSetting.activePanel = 0;
-        this.generateWordCloud(this.artists); 
+        this.generateWordCloud(this.artists);
       }
     },
 
     changeShape(id) {
-      const before = this.artSetting.shape
+      const before = this.artSetting.shape;
       if (id != undefined && before !== id) {
         this.addUndoState();
         this.artSetting.shape = id;
@@ -285,7 +294,7 @@ export default {
     },
 
     changeTextColor(id) {
-      const before = this.artSetting.textColor
+      const before = this.artSetting.textColor;
       if (id !== undefined && before !== id) {
         this.addUndoState();
         this.artSetting.textColor = id;
@@ -295,7 +304,7 @@ export default {
     },
 
     changeTextSize(textSize) {
-      const before = this.artSetting.textSize
+      const before = this.artSetting.textSize;
       if (before !== textSize) {
         this.addUndoState();
         this.artSetting.textSize = textSize;
@@ -345,6 +354,10 @@ export default {
       };
 
       WordCloud(this.$refs["canvas"], options);
+    },
+
+    goHome() {
+     this.$router.push({ path: "/" });
     },
 
     async convertTobase64() {

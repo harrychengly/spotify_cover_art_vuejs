@@ -1,9 +1,9 @@
 <template>
-  <v-form>
+  <v-form @submit="generateArt">
     <v-text-field
       :value="playlistLink"
       :placeholder="$LOCAL('LINK_FORM_PLACEHOLDER')"
-      :rules="[rules.required, rules.validLink]"
+      :rules="rules"
       outlined
       dark
       autocomplete="off"
@@ -23,19 +23,20 @@ export default {
   data() {
     return {
       valid: false, // Check if input is valid
-      rules: {
-        required: (value) => {
+      rules: [
+        (value) => {
           // Link cannot be empty
           this.valid = value !== "";
           return this.valid || "Playlist link is required";
         },
-        validLink: (value) => {
-          // Link must be valud
+        (value) => {
+          // Link must be valid
           this.valid =
-            value.length === 76 && value.match(this.$LOCAL("LINK_REGEX"));
+            value.length === 76 &&
+            value.match(this.$LOCAL("LINK_REGEX")) !== null;
           return this.valid || this.$LOCAL("LINK_INVALID");
         },
-      },
+      ],
     };
   },
   props: {

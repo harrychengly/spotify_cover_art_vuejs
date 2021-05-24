@@ -1,7 +1,7 @@
 <template>
     <v-app-bar app dark>
       <div class="d-flex align-center">
-        <h1>Artify</h1>
+        <h1>covrr</h1>
       </div>
     </v-app-bar>
 </template>

@@ -16,7 +16,7 @@ const router = new Router({
       name: 'home',
       component: HomePage,
       meta: {
-        title: 'Artify'
+        title: 'covrr'
       },
     },
     {
@@ -24,7 +24,7 @@ const router = new Router({
       name: 'result',
       component: ResultPage,
       meta: {
-        title: 'Artify'
+        title: 'covrr'
       },
     }
   ]
