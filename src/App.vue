@@ -29,7 +29,7 @@ export default {
     ...mapState('home', [
       'error',
     ]),
-  }
+  },
 };
 </script>
 

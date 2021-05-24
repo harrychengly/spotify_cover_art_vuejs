@@ -2,49 +2,58 @@
   <v-container fluid class="body-wrapper" :style="bodyBackgroundColor">
     <v-row>
       <v-col>
-        <v-btn
-          class="mb-3"
-          elevataion="2"
-          dark
-          @click="goHome"
-        >
-          <v-icon dark> mdi-arrow-left</v-icon>TRY ANOTHER PLAYLIST
-        </v-btn>
+        <v-tooltip right>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              class="mb-3"
+              elevataion="2"
+              v-on="on"
+              fab
+              dark
+              @click="goHome"
+              small
+            >
+              <v-icon dark> mdi-arrow-left</v-icon>
+            </v-btn>
+          </template>
+          <span>Try another playlist</span>
+        </v-tooltip>
         <div class="box">
           <canvas id="my_canvas" ref="canvas" width="300" height="300"></canvas>
-          <div class="button">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  class="mr-16"
-                  elevataion="2"
-                  fab
-                  color="#1db954"
-                  dark
-                  v-on="on"
-                  @click="convertTobase64"
-                >
-                  <v-icon dark> mdi-cloud-upload</v-icon>
-                </v-btn>
-              </template>
-              <span>Upload to Spotify</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  elevataion="2"
-                  fab
-                  color="#1db954"
-                  dark
-                  v-on="on"
-                  @click="downloadCoverImage"
-                >
-                  <v-icon dark> mdi-download </v-icon>
-                </v-btn>
-              </template>
-              <span>Download</span>
-            </v-tooltip>
-          </div>
+        </div>
+        <div class="button">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                class="mr-16"
+                elevataion="2"
+                fab
+                color="#1db954"
+                dark
+                v-on="on"
+                @click="convertTobase64"
+                :loading="changeCoverLoading"
+              >
+                <v-icon dark> mdi-cloud-upload</v-icon>
+              </v-btn>
+            </template>
+            <span>Upload to Spotify</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                elevataion="2"
+                fab
+                color="#1db954"
+                dark
+                v-on="on"
+                @click="downloadCoverImage"
+              >
+                <v-icon dark> mdi-download </v-icon>
+              </v-btn>
+            </template>
+            <span>Download</span>
+          </v-tooltip>
         </div>
       </v-col>
       <v-col>
@@ -58,7 +67,7 @@
               @click="undoArtSetting"
               :disabled="undo.length === 0"
             >
-              <v-icon dark>mdi-undo</v-icon>
+              Undo
             </v-btn>
           </template>
           <span class="mr-3"> or </span>
@@ -150,6 +159,14 @@
         </v-expansion-panels>
       </v-col>
     </v-row>
+    <v-snackbar
+      :value="showSuccessSnack"
+      color="success"
+      bottom
+      left
+    >
+      Cover updated. Click <a :href="playlistLink" target="_blank">here</a> to view.
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -159,7 +176,6 @@ import Gradient from "javascript-color-gradient";
 import VSwatches from "vue-swatches";
 import WordCloud from "wordcloud";
 import { mapState, mapActions } from "vuex";
-import axios from "axios";
 
 export default {
   name: "ResultPage",
@@ -179,6 +195,7 @@ export default {
       maxTextSize: 10,
       undo: [],
       playlistId: "",
+      showSuccessSnack: false,
       buttonLoading: false,
       tickLabels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       colorGradient: null,
@@ -207,11 +224,15 @@ export default {
       "maxArtistFrequency",
       "error",
       "retrieveArtistsLoading",
+      "changeCoverLoading",
     ]),
     bodyBackgroundColor() {
       return {
         background: `linear-gradient(120deg, ${this.artSetting.backgroundColor}, #191414)`,
       };
+    },
+    playlistLink() {
+      return `https://open.spotify.com/playlist/${this.playlistId}`
     },
   },
   async mounted() {
@@ -227,7 +248,11 @@ export default {
   },
 
   methods: {
-    ...mapActions("home", ["setTokens", "retrievePlaylistArtists"]),
+    ...mapActions("home", [
+      "setTokens",
+      "retrievePlaylistArtists",
+      "changeSpotifyCover"
+    ]),
 
     getButtonGradientColor(light, dark) {
       return {
@@ -360,25 +385,17 @@ export default {
     },
 
     async convertTobase64() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const access_token = urlParams.get("access_token");
-      var canvas = document.getElementById("my_canvas");
-      var dataURL = canvas.toDataURL();
-      var strImage = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
-      try {
-        await axios.put(
-          "http://localhost:8888/change_image/?access_token=" +
-            access_token +
-            "&playlist_id=" +
-            this.playlistId,
-          {
-            data: {
-              img: strImage,
-            },
-          }
-        );
-      } catch (error) {
-        console.log(error);
+      this.showSuccessSnack = false
+      const canvas = document.getElementById("my_canvas");
+      const dataURL = canvas.toDataURL();
+      const strImage = dataURL.replace(/^data:image\/[a-z]+;base64,/, "");
+      const success = await this.changeSpotifyCover({
+        playlistId: this.playlistId, 
+        image: strImage
+      })
+      
+      if (success) {
+        this.showSuccessSnack = true
       }
     },
 

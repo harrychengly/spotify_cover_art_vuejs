@@ -49,5 +49,21 @@ export default {
     } finally {
       commit('removeRetrieveArtistsLoading', false)
     }
+  },
+
+  async changeSpotifyCover({ commit }, { playlistId, image }) {
+    commit('setError', null)
+    commit('setChangeCoverLoading')
+
+    try {
+      await SpotifyService.changeSpotifyCover(playlistId, `${image}`)
+
+      return true
+    } catch (error) {
+      commit('setError', 'Cannot change playlist cover. Please try again.')
+      return false
+    } finally {
+      commit('removeChangeCoverLoading')
+    }
   }
 }

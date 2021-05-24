@@ -9,8 +9,8 @@ const ApiService = {
     return `Bearer ${accessToken}`
   },
 
-  post(resource, data) {
-    return axios.post(resource, data)
+  put(resource, data, config = null) {
+    return axios.put(resource, data, config)
   },
 
   get(resource, config = null) {

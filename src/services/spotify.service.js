@@ -20,6 +20,26 @@ const SpotifyService = {
     }
   },
 
+  changeSpotifyCover: async function (playlistId, image) {
+
+    const accessToken = TokenService.getAccessToken()
+
+    try {
+      const res = await ApiService.put(`https://api.spotify.com/v1/playlists/${playlistId}/images`,
+        image,
+        {
+          headers: {
+            Authorization: ApiService.setTokenHeader(accessToken),
+            'Content-Type': 'image/jpeg'
+          }
+        })
+
+      return res.data.items
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
 }
 
 export default SpotifyService
