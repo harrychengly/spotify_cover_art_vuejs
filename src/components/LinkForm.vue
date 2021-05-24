@@ -1,5 +1,5 @@
 <template>
-  <v-form @submit="generateArt">
+  <v-form ref="form" @submit.prevent="submitForm">
     <v-text-field
       :value="playlistLink"
       :placeholder="$LOCAL('LINK_FORM_PLACEHOLDER')"
@@ -73,6 +73,13 @@ export default {
     async generateArt() {
       this.$emit("generate-art");
     },
+
+    async submitForm() {
+      const isValid = this.$refs.form.validate()
+      if (isValid) {
+        await this.generateArt()
+      }
+    }
   },
 };
 </script>
