@@ -16,13 +16,14 @@ var querystring = require('querystring')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 const path = require('path')
-const serveStatic = require('serve-static')
 
 var client_id = process.env.CLIENT_ID // Your client id
 var client_secret = process.env.CLIENT_SECRET // Your secret
 var redirect_uri = process.env.REDIRECT_URI // Your redirect uri
 
 const PORT = process.env.PORT || 8888
+
+const STATIC_PATH = process.env.NODE_ENV === 'production' ? '/dist' : '/public'
 
 /**
  * Generates a random string containing numbers and letters
@@ -43,7 +44,7 @@ var stateKey = 'spotify_auth_state'
 
 var app = express()
 
-app.use(express.static(__dirname + '/public'))
+app.use('/', express.static(path.join(__dirname, STATIC_PATH)))
   .use(cors())
   .use(cookieParser())
   .use(bodyParser.json())
@@ -171,9 +172,7 @@ app.put('/change_image', function (req, res) {
 
 })
 
-app.use('/', serveStatic(path.join(__dirname, '/dist')))
-
-app.get('/.*/', function (req, res) {
+app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, '/dist/index.html'))
 })
 
