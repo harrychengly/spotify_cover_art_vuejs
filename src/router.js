@@ -33,20 +33,20 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   const queryParams = to.query
   const accessToken = queryParams.access_token
-  const refreshToken = queryParams.refresh_token
 
+  // Check if user is newly logged in from Spotify service
+  if (accessToken) {
+    TokenService.saveAccessToken(accessToken)
+    store.dispatch('home/setUserIsLoggedIn')
+
+    return next({ path: '/' })
+  }
+
+  // If token exists, set user as logged in
   const isLoggedIn = TokenService.getAccessToken()
-
   if (isLoggedIn) {
     // To indicate that a user has logged in
     store.dispatch('home/setUserIsLoggedIn')
-  }
-
-  if (accessToken && refreshToken) {
-    TokenService.saveAccessToken(accessToken)
-    TokenService.saveRefreshToken(refreshToken)
-    store.dispatch('home/setUserIsLoggedIn')
-    return next({ path: '/' })
   }
 
   next()

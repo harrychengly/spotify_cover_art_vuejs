@@ -1,11 +1,4 @@
 export default {
-  setAccessToken(state, payload) {
-    state.accessToken = payload
-  },
-
-  setRefreshToken(state, payload) {
-    state.refreshToken = payload
-  },
 
   setArtists(state, payload) {
     state.artists = payload
@@ -15,16 +8,12 @@ export default {
     state.error = payload
   },
 
-  removeAccessToken(state) {
-    state.accessToken = null
-  },
-
-  removeRefreshToken(state) {
-    state.refreshToken = null
-  },
-
   setUserIsLoggedIn(state) {
     state.userIsLoggedIn = true
+  },
+
+  removeUserIsLoggedIn(state) {
+    state.userIsLoggedIn = false
   },
 
   setRetrieveArtistsLoading(state) {

@@ -56,8 +56,9 @@
               dark
               v-on="on"
               @click="undoArtSetting"
+              :disabled="undo.length === 0"
             >
-              <v-icon dark> mdi-undo</v-icon>
+              <v-icon dark>mdi-undo</v-icon>
             </v-btn>
           </template>
           <span class="mr-3"> or </span>
@@ -222,8 +223,6 @@ export default {
     if (this.error === null) {
       this.generateWordCloud(this.artists);
       this.addUndoListener();
-    } else {
-      this.$router.push({ path: "/" });
     }
   },
 

@@ -1,20 +1,15 @@
+import AuthService from '../services/auth.service'
 import SpotifyService from '../services/spotify.service'
 
 export default {
+
   logOut({ commit }) {
-    // Remove access token
-    commit('removeAccessToken')
-    // Remove refresh token
-    commit('removeRefreshToken')
+    commit('removeUserIsLoggedIn')
+    AuthService.logout()
   },
 
   setUserIsLoggedIn({ commit }) {
     commit('setUserIsLoggedIn')
-  },
-
-  setTokens({ commit }, { accessToken, refreshToken }) {
-    commit('setAccessToken', accessToken)
-    commit('setRefreshToken', refreshToken)
   },
 
   async retrievePlaylistArtists({ commit }, playlistId) {
@@ -49,7 +44,6 @@ export default {
 
       return true
     } catch (error) {
-      console.log(error)
       commit('setError', 'Cannot get playlist. Please try again.')
       return false
     } finally {
