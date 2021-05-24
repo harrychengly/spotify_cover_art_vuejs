@@ -32,7 +32,7 @@ export default {
         (value) => {
           // Link must be valid
           this.valid =
-            value.length === 76 &&
+            (value.length === 76 || value.length === 82) &&
             value.match(this.$LOCAL("LINK_REGEX")) !== null;
           return this.valid || this.$LOCAL("LINK_INVALID");
         },
