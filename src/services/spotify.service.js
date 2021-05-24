@@ -9,7 +9,9 @@ const SpotifyService = {
 
     try {
       const res = await ApiService.get(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-        'Authorization': ApiService.setTokenHeader(accessToken)
+        headers: {
+          Authorization: ApiService.setTokenHeader(accessToken)
+        }
       })
 
       return res.data.items
