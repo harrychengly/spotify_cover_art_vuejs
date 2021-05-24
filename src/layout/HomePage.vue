@@ -29,7 +29,7 @@
           <v-btn
             dark
             :link="true"
-            href="https://covrr-spotify.herokuapp.com/login"
+            :href="`${baseAppUrl}/login`"
             color="#191414"
           >
             Login with Spotify
@@ -68,6 +68,13 @@ export default {
     playlistId() {
       return this.playlistLink.split("?")[0].split("/")[4];
     },
+    baseAppUrl() {
+      if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:8888'
+      } else {
+        return 'https://covrr-spotify.herokuapp.com'
+      }
+    }
   },
   mounted() {
     this.show = true;
@@ -106,13 +113,18 @@ export default {
   background: linear-gradient(120deg, #1db954,30%, #191414);
 
   .form-wrapper {
+    display: flex;
+    justify-content: center;
     text-align: center;
-    position: absolute;
-    top: 30%;
-    width: 30rem;
+    align-items: center;
+    width: 28rem;
 
     & .tagline-text {
       font-size: 2.5rem;
+    }
+
+    div {
+      width: 100%;
     }
   }
 }
