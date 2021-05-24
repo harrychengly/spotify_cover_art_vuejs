@@ -29,7 +29,7 @@
           <v-btn
             dark
             :link="true"
-            href="http://localhost:8888/login"
+            href="https://covrr-spotify.herokuapp.com/login"
             color="#191414"
           >
             Login with Spotify
