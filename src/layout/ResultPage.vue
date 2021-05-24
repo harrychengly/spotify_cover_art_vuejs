@@ -214,8 +214,6 @@ export default {
     if (this.error === null) {
       this.generateWordCloud(this.artists);
       this.addUndoListener();
-    } else {
-      this.$router.push({ path: "/" });
     }
   },
 
